@@ -1,0 +1,61 @@
+<!-- Use a templated HTML printing scriptlet to import common stylesheet -->
+<?!= HtmlService.createHtmlOutputFromFile('Stylesheet').getContent(); ?>
+
+<!-- Below is the HTML code that defines the sidebar element structure. -->
+<div class="eventplanner mui-container">
+	<div class="mui-row" id="eventplanner-elements">
+		<div class="mui-col-md-12">
+	  		<p>Use the sidebar to add an event. You can set whether or not you would like to have an entire day event or part of the day.</p>
+		</div>
+  	</div>
+  	<div class="mui-row">
+		<div class="mui-col-md-12">
+			<form class="mui-divider-top">
+				<div class="mui-form-group">
+					<div class="mui-select">
+				  		<select id="eventplanner-eventtype">
+							<option value="partial">Start and end time</option>
+							<option value="day">Entire day</option>
+				  		</select>
+					</div>
+					<label for="eventplanner-eventtype">Day or partial event?</label>
+				</div>
+				<div class="mui-form-group">
+					<input type="date" id="eventplanner-start-date" class="mui-form-control">
+					<label for="eventplanner-start-date">Start date</label>
+				</div>
+				<div class="mui-form-group">
+					<input type="time" id="eventplanner-start-time" class="mui-form-control">
+					<label for="eventplanner-start-time">Start time</label>
+				</div>
+				<div class="mui-form-group">
+					<input type="date" id="eventplanner-end-date" class="mui-form-control">
+					<label for="eventplanner-end-date">End date</label>
+				</div>
+				<div class="mui-form-group">
+					<input type="time" id="eventplanner-end-time" class="mui-form-control">
+					<label for="eventplanner-end-time">End time</label>
+				</div>
+				<div class="mui-form-group">
+					<input type="text" id="eventplanner-location" class="mui-form-control">
+					<label for="eventplanner-location" class="mui-form-floating-label">Location</label>
+				</div>
+				<button class="mui-btn mui-btn-primary" id="eventplanner-add-button">Add event</button>
+			</form>
+		  	<div id="eventplanner-notification-area"></div>
+		</div>
+  	</div>
+  	<div class="mui-row">
+		<div class="mui-col-md-12">
+			<div class="mui-divider-top mui-padding-top">
+				<p>Forms add-on made by</p>
+				<a href="http://www.incentro.com/" target="_blank">
+					<img alt="Incentro" class="logo" width="100" src="http://www.incentro.com/static/incentropresentation/image/logo.png">
+				</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Use a templated HTML printing scriptlet to import JavaScript -->
+<?!= HtmlService.createHtmlOutputFromFile('SidebarJavaScript').getContent(); ?>

@@ -1,0 +1,95 @@
+<script src="//cdn.muicss.com/mui-0.1.19/js/mui.min.js"></script>
+<script>
+
+  /**
+   * Calls the server to modify the form.
+   * Sends the information entered into the sidebar to the server to append
+   * a new form item to the current form.
+   */
+  function onAddItemClick() {
+    this.disabled = true;
+
+    // Gather any information that needs to be sent to the server here.
+    var eventData = {
+      start: {
+        date: document.getElementById('eventplanner-start-date').value,
+        time: document.getElementById('eventplanner-start-time').value
+      },
+      end: {
+        date: document.getElementById('eventplanner-end-date').value,
+        time: document.getElementById('eventplanner-end-time').value
+      },
+      location: document.getElementById('eventplanner-location').value
+    };
+
+
+    // Send the value to the server and listen for a response.
+    google.script.run
+        .withSuccessHandler(
+          function(msg, element) {
+            // Respond to success conditions here.
+            showStatus('Added an event planner form item.');
+            element.disabled = false;
+          })
+        .withFailureHandler(
+          function(msg, element) {
+            // Respond to failure conditions here.
+            showStatus(msg, 'error');
+            element.disabled = false;
+          })
+        .withUserObject(this)
+        .addFormItem(eventData);
+  }
+
+
+  /**
+   * Displays the given status message in the sidebar.
+   *
+   * @param {String} msg The status message to display.
+   * @param {String} classId The message type (class id) that the message
+   *   should be displayed as.
+   */
+  function showStatus(msg, classId) {
+
+    var notifArea = document.getElementById('eventplanner-notification-area');
+    notifArea.classList.remove(classId);
+    notifArea.innerHTML = msg;
+    if (classId) {
+      notifArea.classList.add(classId);
+    }
+  }
+
+  /**
+   * Run initializations on sidebar load.
+   */
+  (function() {
+    // Assign handler functions to sidebar elements here, if needed.
+    document.getElementById('eventplanner-add-button').onclick = onAddItemClick;
+
+    //    set default date
+    var d = new Date(),
+        h = d.getHours(),
+        m = d.getMinutes(),
+        year = d.getYear(),
+        month = d.getMonth() + 1,
+        day = d.getYear();
+
+//    m = (m > 0) h + 1;
+    if(h < 10) h = '0' + h;
+    if(m < 10) m = '0' + m;
+
+
+    var time = h + ':' + m;
+    var date = year + '-' + month + '-' + day;
+
+    document.getElementById('eventplanner-start-time').value = time;
+    document.getElementById('eventplanner-end-time').value = time;
+
+    document.getElementById('eventplanner-start-date').value = date;
+    document.getElementById('eventplanner-end-date').value = date;
+
+    // Call the server here to retrieve any information needed to build
+    // the sidebar, if necessary.
+  })();
+
+</script>
