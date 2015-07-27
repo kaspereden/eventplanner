@@ -66,20 +66,23 @@
     // Assign handler functions to sidebar elements here, if needed.
     document.getElementById('eventplanner-add-button').onclick = onAddItemClick;
 
-    //    set default date
+    // set default date
     var d = new Date(),
         h = d.getHours(),
-        m = d.getMinutes(),
-        year = d.getYear(),
+        year = d.getFullYear(),
         month = d.getMonth() + 1,
-        day = d.getYear();
+        day = d.getDate();
 
-//    m = (m > 0) h + 1;
-    if(h < 10) h = '0' + h;
-    if(m < 10) m = '0' + m;
+    function update(i) {
+        i = (i < 10) ? '0' + i : i;
+        return i;
+    }
 
+    month = update(month);
+    day = update(day);
+    h = update(h);
 
-    var time = h + ':' + m;
+    var time = h + ':00';
     var date = year + '-' + month + '-' + day;
 
     document.getElementById('eventplanner-start-time').value = time;
