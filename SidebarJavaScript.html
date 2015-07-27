@@ -28,7 +28,7 @@
         .withSuccessHandler(
           function(msg, element) {
             // Respond to success conditions here.
-            showStatus('Added an event planner form item.');
+            showStatus('Added an event planner form item.', 'success');
             element.disabled = false;
           })
         .withFailureHandler(
