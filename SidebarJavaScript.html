@@ -107,11 +107,22 @@
    * 
    * @param  {Object} Object containing the results from the places API
    */
-  function showPlacesSuggestions( results ){    
+  function showPlacesSuggestions( results ){
+    var suggestionClass = '';
+  
     $locationSuggestions.empty();
 
-    for (var i = 0; i < results.predictions.length; i++) {
-      $locationSuggestions.append('<li><a href="#">' + results.predictions[i].description + '</a></li>');
+    if( $locationInput[0].value.length ) {
+      for (var i = 0; i < results.predictions.length; i++) {
+        if( isEven(i) ) {
+          suggestionClass = 'suggestion';
+        } else {
+          suggestionClass = 'suggestion stripe';
+        }
+        $locationSuggestions.append('<li class="' + suggestionClass + '"><a href="#">' + results.predictions[i].description + '</a></li>');
+      }
+  
+      $locationSuggestions.addClass('active');
     }
   }
 
@@ -124,6 +135,7 @@
       
       $locationInput.val( value );
       $locationSuggestions.empty();
+      $locationSuggestions.removeClass('active');
     });
   }
   
@@ -145,9 +157,20 @@
         }, 300);
       } else {
         $locationSuggestions.empty();
+        $locationSuggestions.removeClass('active');
       }
     });
   }
+  
+  /**
+   * This small function will check if a number is even or uneven
+   * 
+   * @param  {Number} number  Integer to check
+   * @return {Boolean}        True for even numbers false for odd
+   */
+  function isEven(number){
+    return (number%2 == 0) ? true : false;
+  };
 
   /**
    * Run initializations on sidebar load.

@@ -19,16 +19,40 @@
   color: #FF0000;
 }
 
+#eventplanner-location{
+  width: 100%;
+}
 .eventplanner-location-suggestions {
+  display: none;
   width: 100%;
-  top: -37px;
+  padding: 0;
+  margin: 0 0 10px 0;
+  border: 1px solid #DCDCDC;
+  box-sizing: border-box;
 }
-.eventplanner-location-suggestions .mui-dropdown-menu {
-  width: 100%;
+.eventplanner-location-suggestions.active {
+  display: block;
 }
-.eventplanner-location-suggestions .mui-dropdown-menu li a {
+.eventplanner-location-suggestions .suggestion{
+  list-style: none;
+  padding: 5px;
+}
+.eventplanner-location-suggestions .suggestion.stripe{
+  background: #EEE;
+}
+.eventplanner-location-suggestions .suggestion a {
+  display: block;
+  clear: both;
+  white-space: nowrap;
+  color: inherit;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.eventplanner-location-suggestions .suggestion:hover{
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.eventplanner-location-suggestions .suggestion a:hover{
+  text-decoration: none;
 }
 
 </style>
