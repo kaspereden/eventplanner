@@ -51,7 +51,23 @@ function addFormItem(eventData) {
 
   var form = FormApp.getActiveForm();
   var item = form.addMultipleChoiceItem();
-  item.setTitle('Are you joining our event?')
+  
+  var helptext = '';
+  var startDate = convertDate(eventData.start.date);
+  var startTime = eventData.start.time;
+  var endDate = convertDate(eventData.end.date);
+  var endTime = eventData.end.time;
+  var location = eventData.location;
+  
+  /* Events with a location */
+  if(location) {
+    helptext = 'The event will begin at: ' + startDate + ' ' + startTime + ' and will end at : ' + endDate + ' ' + endTime + '. The location of the event is: ' + location;
+  } else {
+    helptext = 'The event will begin at: ' + startDate + ' ' + startTime + ' and will end at : ' + endDate + ' ' + endTime + '.';    
+  }
+  
+  item.setTitle('Are you attending?')
+    .setHelpText(helptext)
       .setChoices([
          item.createChoice('Yes'),
          item.createChoice('No')
