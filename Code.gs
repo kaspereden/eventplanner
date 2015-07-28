@@ -41,6 +41,20 @@ function showSidebar() {
 }
 
 /**
+ * Convert the date from yyyy-mm-dd to dd/mm/yyyy
+ *
+ * @param {string} the original date formatted as yyyy-mm-dd.
+ * @return {string} the converted date formatted as dd/mm/yyyy
+ */
+function convertDate(date) {
+  var arr = [];
+
+  arr = date.split('-');
+  
+  return arr[2]+'/'+arr[1]+'/'+arr[0];
+}
+
+/**
  * Appends a new form item to the current form.
  *
  * @param {Object} itemData a collection of String data used to
