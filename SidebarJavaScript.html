@@ -3,7 +3,8 @@
 <script>
 
   var $locationInput = $('#eventplanner-location'),
-      $locationSuggestions = $('#eventplanner-location-suggestions');
+      $locationSuggestions = $('#eventplanner-location-suggestions'),
+      lastQuery = '';
 
   function formatDate(dateObj) {
      var date = dateObj.date.split('-');
@@ -37,6 +38,10 @@
    */
   function onAddItemClick() {
     this.disabled = true;
+    
+    // Remove the location suggestions
+    $locationSuggestions.empty();
+    $locationSuggestions.removeClass('active');
 
     // Gather any information that needs to be sent to the server here.
     var eventData = {
@@ -50,7 +55,6 @@
       },
       location: document.getElementById('eventplanner-location').value
     };
-
 
     eventData.start.datetime = formatDate(eventData.start);
     eventData.end.datetime = formatDate(eventData.end);
@@ -99,6 +103,7 @@
   function getPlacesCall( query ) {
     google.script.run
       .withSuccessHandler( showPlacesSuggestions )
+      .withUserObject( query )
       .getPlaces( query );
   }
 
@@ -107,12 +112,12 @@
    * 
    * @param  {Object} Object containing the results from the places API
    */
-  function showPlacesSuggestions( results ){
+  function showPlacesSuggestions( results, query ){
     var suggestionClass = '';
-  
+      
     $locationSuggestions.empty();
 
-    if( $locationInput[0].value.length ) {
+    if( lastQuery && lastQuery === query ) {
       for (var i = 0; i < results.predictions.length; i++) {
         if( isEven(i) ) {
           suggestionClass = 'suggestion';
@@ -146,8 +151,15 @@
     var query,
         requestTimeout = 0;
             
-    $locationInput.on('keyup', function(){
+    $locationInput.on('keyup', function( event ){
       query = $locationInput[0].value;
+      
+      // When the value doesn't change we don't do a request
+      if(query === lastQuery){
+        return;
+      }
+      
+      lastQuery = query;
     
       clearTimeout(requestTimeout);
 
