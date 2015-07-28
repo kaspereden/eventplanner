@@ -70,6 +70,30 @@ function getPlaces( query ) {
 }
 
 /**
+ * Check if the user filled in all the required fields.
+ * 
+ * @param  {Object} Object containing the user input
+ * @return {Object} Object containing the error messages
+ */
+function checkValues(eventData) {  
+  if(!eventData.start || !eventData.start.date) {
+    throw { message: 'The start date should not be empty.' }
+  }
+  
+  if(!eventData.start || !eventData.start.time) {
+    throw { message: 'The start time should not be empty.' }
+  }
+  
+  if(!eventData.end || !eventData.end.date) {
+    throw { message: 'The end date should not be empty.' }
+  }
+  
+  if(!eventData.end || !eventData.end.time) {
+    throw { message: 'The end time should not be empty.' }
+  }
+}
+
+/**
  * Appends a new form item to the current form.
  *
  * @param {Object} itemData a collection of String data used to
@@ -77,6 +101,13 @@ function getPlaces( query ) {
  */
 function addFormItem(eventData) {
   // Use data collected from sidebar to manipulate the form.
+  
+  try{
+    checkValues(eventData);
+  }
+  catch(e){
+    throw new Error(e.message);
+  }
 
   var form = FormApp.getActiveForm();
   var item = form.addMultipleChoiceItem();
