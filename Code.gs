@@ -78,8 +78,9 @@ function getPlaces( query ) {
 function addFormItem(eventData) {
   // Use data collected from sidebar to manipulate the form.
 
-  var form = FormApp.getActiveForm();
-  var item = form.addMultipleChoiceItem();
+  var form = FormApp.getActiveForm(),
+      properties = PropertiesService.getDocumentProperties(),
+      item = form.addMultipleChoiceItem();
 
   var helptext = '';
   var startDate = convertDate(eventData.start.date);
@@ -116,6 +117,8 @@ function addFormItem(eventData) {
        .onFormSubmit()
        .create();
     properties.setProperty('triggerId', trigger.getUniqueId());
+  } else {
+    Logger.log('No trigger has been set because of: ' + ScriptApp.AuthMode);
   }
 
 }
@@ -123,7 +126,7 @@ function addFormItem(eventData) {
 
 function mailTheEvent() {
   var properties = PropertiesService.getDocumentProperties();
-  var email = 'pieter.bogaerts@incentro.com';
+  var email = 'pieter.bogaerts@incentro.com';//Session.getEffectiveUser().getEmail();
 
   var event = properties.getProperty('event');
   addGuest(email, event);
