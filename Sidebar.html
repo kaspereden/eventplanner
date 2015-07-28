@@ -1,5 +1,62 @@
 <!-- Use a templated HTML printing scriptlet to import common stylesheet -->
+<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
 <?!= HtmlService.createHtmlOutputFromFile('Stylesheet').getContent(); ?>
+
+<!-- Below is the HTML code that defines the sidebar element structure. -->
+<div class="sidebar branding-below">
+	<p>Use the sidebar to add an event. You can set whether or not you would like to have an entire day event or part of the day.</p>
+	<form class="block">
+		<div class="block form-group">
+			<label for="eventplanner-eventtype">Day or partial event?</label>
+	  		<select id="eventplanner-eventtype">
+				<option value="partial">Start and end time</option>
+				<option value="day">Entire day</option>
+	  		</select>
+		</div>
+		<div class="block">
+			<div class="inline form-group">
+				<label for="eventplanner-start-date">Start date</label>
+				<input type="date" id="eventplanner-start-date">
+			</div>
+			<div class="inline form-group">
+				<label for="eventplanner-start-time">Start time</label>
+				<input type="time" id="eventplanner-start-time">
+			</div>
+		</div>
+		<div class="block">
+			<div class="inline form-group">
+				<label for="eventplanner-end-date">End date</label>
+				<input type="date" id="eventplanner-end-date">
+			</div>
+			<div class="inline form-group">
+				<label for="eventplanner-end-time">End time</label>
+				<input type="time" id="eventplanner-end-time">
+			</div>
+		</div>
+		<div class="block form-group">
+			<label for="eventplanner-location">Location</label>
+			<input type="text" id="eventplanner-location">
+			<div class="mui-dropdown eventplanner-location-suggestions">
+			<ul class="mui-dropdown-menu mui-open" id="eventplanner-location-suggestions"></ul>
+		</div>
+		<div class="block">
+			<button class="action" id="eventplanner-add-button">Add event</button>
+		</div>
+	</form>
+	<div class="block">
+  		<div id="eventplanner-notification-area"></div>
+  	</div>
+</div>
+<div class="sidebar bottom">
+  <div class="block">
+    <p>Forms add-on made by</p>
+  </div>
+  <div class="block">
+    <a href="http://www.incentro.com/" target="_blank">
+      <img alt="Incentro" class="logo" width="100" src="http://www.incentro.com/static/incentropresentation/image/logo.png">
+    </a>
+  </div>
+</div>
 
 <!-- Below is the HTML code that defines the sidebar element structure. -->
 <div class="eventplanner mui-container">
