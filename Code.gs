@@ -50,7 +50,7 @@ function convertDate(date) {
   var arr = [];
 
   arr = date.split('-');
-  
+
   return arr[2]+'/'+arr[1]+'/'+arr[0];
 }
 
@@ -65,21 +65,21 @@ function addFormItem(eventData) {
 
   var form = FormApp.getActiveForm();
   var item = form.addMultipleChoiceItem();
-  
+
   var helptext = '';
   var startDate = convertDate(eventData.start.date);
   var startTime = eventData.start.time;
   var endDate = convertDate(eventData.end.date);
   var endTime = eventData.end.time;
   var location = eventData.location;
-  
+
   /* Events with a location */
   if(location) {
     helptext = 'The event will begin at: ' + startDate + ' ' + startTime + ' and will end at : ' + endDate + ' ' + endTime + '. The location of the event is: ' + location;
   } else {
-    helptext = 'The event will begin at: ' + startDate + ' ' + startTime + ' and will end at : ' + endDate + ' ' + endTime + '.';    
+    helptext = 'The event will begin at: ' + startDate + ' ' + startTime + ' and will end at : ' + endDate + ' ' + endTime + '.';
   }
-  
+
   item.setTitle('Are you attending?')
     .setHelpText(helptext)
       .setChoices([
@@ -87,4 +87,31 @@ function addFormItem(eventData) {
          item.createChoice('No')
       ])
      .showOtherOption(false);
+
+  eventData.description = form.getDescription();
+  eventData.title = form.getTitle();
+
+  // Create calendar event
+  createCalendarEvent(eventData, properties);
+
+  if (ScriptApp.AuthMode === 'FULL') {
+    // only allowed in authmode full.
+    var trigger = ScriptApp.newTrigger('mailTheEvent')
+       .forForm(form)
+       .onFormSubmit()
+       .create();
+    properties.setProperty('triggerId', trigger.getUniqueId());
+  }
+
+}
+
+
+function mailTheEvent() {
+  var properties = PropertiesService.getDocumentProperties();
+  var email = 'pieter.bogaerts@incentro.com';
+
+  var event = properties.getProperty('event');
+  addGuest(email, event);
+
+
 }

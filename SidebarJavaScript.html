@@ -1,6 +1,31 @@
 <script src="//cdn.muicss.com/mui-0.1.19/js/mui.min.js"></script>
 <script>
 
+  function formatDate(dateObj) {
+     var date = dateObj.date.split('-');
+     var time = dateObj.time + ':00';
+     var year = date[0],
+         month = date [1],
+         day = date[2];
+     var fullMonth = {
+       '01': 'January',
+       '02': 'February',
+       '03': 'March',
+       '04': 'April',
+       '05': 'May',
+       '06': 'June',
+       '07': 'July',
+       '08': 'August',
+       '09': 'September',
+       '10': 'October',
+       '11': 'November',
+       '12': 'December'
+     };
+
+     //'July 27, 2015 20:00:00'
+     return fullMonth[month] + ' ' + day + ', ' + year + ' ' + time;
+  }
+
   /**
    * Calls the server to modify the form.
    * Sends the information entered into the sidebar to the server to append
@@ -22,6 +47,9 @@
       location: document.getElementById('eventplanner-location').value
     };
 
+
+    eventData.start.datetime = formatDate(eventData.start);
+    eventData.end.datetime = formatDate(eventData.end);
 
     // Send the value to the server and listen for a response.
     google.script.run
