@@ -131,13 +131,18 @@
    * Adds a listener to the location input which will send query's to the Places API
    */
   function addLocationListener(){
-    var query;
+    var query,
+        requestTimeout = 0;
             
     $locationInput.on('keyup', function(){
       query = $locationInput[0].value;
     
+      clearTimeout(requestTimeout);
+
       if( query.length > 2 ){
-        getPlacesCall( query );
+        requestTimeout = setTimeout( function(){
+          getPlacesCall( query );
+        }, 300);
       } else {
         $locationSuggestions.empty();
       }
