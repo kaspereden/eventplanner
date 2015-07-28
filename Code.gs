@@ -55,6 +55,21 @@ function convertDate(date) {
 }
 
 /**
+ * Get autocomplete suggestions for the location field from the Places API
+ * 
+ * @param  {string} The query to search for
+ * @return {Object} Object containing the results
+ */
+function getPlaces( query ) {
+  var completeUrl = 'https://maps.googleapis.com/maps/api/place/autocomplete/json?key=AIzaSyD8dAv-lAB0PeLifnE_K0_aCKylvlvZgck&input=' + query;
+  var response = UrlFetchApp.fetch( completeUrl );
+  var data = response.getContentText();
+  var json = JSON.parse( data );
+    
+  return json;
+}
+
+/**
  * Appends a new form item to the current form.
  *
  * @param {Object} itemData a collection of String data used to

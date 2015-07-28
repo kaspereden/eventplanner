@@ -1,4 +1,9 @@
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
 <script>
+
+  var $locationInput = $('#eventplanner-location'),
+      $locationSuggestions = $('#eventplanner-location-suggestions');
 
   function formatDate(dateObj) {
      var date = dateObj.date.split('-');
@@ -87,11 +92,70 @@
   }
 
   /**
+   * Does a call to the google places api and trigger the showPlacesSuggestions function on success.
+   * 
+   * @param  {String} query The query send to the places api
+   */
+  function getPlacesCall( query ) {
+    google.script.run
+      .withSuccessHandler( showPlacesSuggestions )
+      .getPlaces( query );
+  }
+
+  /**
+   * Shows a dropdown list with suggestions based on the query provided by the user
+   * 
+   * @param  {Object} Object containing the results from the places API
+   */
+  function showPlacesSuggestions( results ){    
+    $locationSuggestions.empty();
+
+    for (var i = 0; i < results.predictions.length; i++) {
+      $locationSuggestions.append('<li><a href="#">' + results.predictions[i].description + '</a></li>');
+    }
+  }
+
+  /**
+   * Adds a listener to the results provided by the Places API
+   */
+  function addLocationSuggestionsListener(){    
+    $locationSuggestions.on('click', 'a', function(){
+      var value = $(this).text();
+      
+      $locationInput.val( value );
+      $locationSuggestions.empty();
+    });
+  }
+  
+  /**
+   * Adds a listener to the location input which will send query's to the Places API
+   */
+  function addLocationListener(){
+    var query;
+            
+    $locationInput.on('keyup', function(){
+      query = $locationInput[0].value;
+    
+      if( query.length > 2 ){
+        getPlacesCall( query );
+      } else {
+        $locationSuggestions.empty();
+      }
+    });
+  }
+
+  /**
    * Run initializations on sidebar load.
    */
   (function() {
     // Assign handler functions to sidebar elements here, if needed.
     document.getElementById('eventplanner-add-button').onclick = onAddItemClick;
+
+    // Start listening to changes on the location input field
+    addLocationListener();
+
+    // Start listening to user clicks on the location suggestions
+    addLocationSuggestionsListener();
 
     // set default date
     var d = new Date(),
