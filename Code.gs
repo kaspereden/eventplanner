@@ -101,7 +101,7 @@ function checkEventDate(eventData) {
     return 'The start date should be on or before the end date.';
   }
   
-  if(eventData.start && eventData.start.date && eventData.start.time && eventData.end && eventData.end.date && eventData.end.time && parseInt(startDate+startTime, 10) >= parseInt(endDate+endTime, 10)) {
+  if(eventData.eventType !== 'day' && eventData.start && eventData.start.date && eventData.start.time && eventData.end && eventData.end.date && eventData.end.time && parseInt(startDate+startTime, 10) >= parseInt(endDate+endTime, 10)) {
     return 'The start date and time should be before the end date and time.';
   }
 }

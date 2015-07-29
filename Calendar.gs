@@ -18,7 +18,20 @@ function createCalendarEvent(eventData, properties) {
    * Create calendar event
    */
   var calendar = CalendarApp.getDefaultCalendar();
-  var ev = calendar.createEvent(title, startDate, endDate, options);
+  var ev;
+
+  if(eventData.eventType === 'day'){
+    if(startDate.getDate() === endDate.getDate()){
+      ev = calendar.createAllDayEvent(title, startDate, options);
+    } else {
+      startDate.setHours( 0, 0, 0 );
+      endDate.setHours( 23, 59, 59 );
+      ev = calendar.createEvent(title, startDate, endDate, options);
+    }
+  } else {
+    ev = calendar.createEvent(title, startDate, endDate, options);
+  }
+
   properties.setProperty('eventDate', eventData.start.datetime);
 
   properties.setProperty('eventTitle', title);
