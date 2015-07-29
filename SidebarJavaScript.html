@@ -73,9 +73,9 @@
     google.script.run
         .withSuccessHandler(
           function(msg, element) {
-            // Respond to success conditions here.
-            showStatus('Added an event planner form item.', 'success');
             element.disabled = false;
+            // Respond to success conditions here.
+            google.script.run.withUserObject(this).showCompletedScreen();
           })
         .withFailureHandler(
           function(msg, element) {

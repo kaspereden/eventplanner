@@ -1,0 +1,21 @@
+<!-- Use a templated HTML printing scriptlet to import common stylesheet -->
+<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+<?!= HtmlService.createHtmlOutputFromFile('Stylesheet').getContent(); ?>
+
+<!-- Below is the HTML code that defines the sidebar element structure. -->
+<div class="sidebar branding-below">
+	<p>You've successfully added the event to your form. When the form gets submitted and the user has selected yes he will be invited for your event.</p>
+</div>
+<div class="sidebar bottom">
+  <div class="block">
+    <p>Forms add-on made by</p>
+  </div>
+  <div class="block">
+    <a href="http://www.incentro.com/" target="_blank">
+      <img alt="Incentro" class="logo" width="100" src="http://www.incentro.com/static/incentropresentation/image/logo.png">
+    </a>
+  </div>
+</div>
+
+<!-- Use a templated HTML printing scriptlet to import JavaScript -->
+<?!= HtmlService.createHtmlOutputFromFile('SidebarJavaScript').getContent(); ?>

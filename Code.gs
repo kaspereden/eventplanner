@@ -12,10 +12,10 @@ var AUTH_POPUP_TITLE = 'Authorisation Request';
  * @param {Object} e The event parameter for a simple onOpen trigger.
  */
 function onOpen(e) {
-  FormApp.getUi()
-      .createAddonMenu()
-      .addItem('Show event planner', 'showSidebar')
-      .addToUi();
+    FormApp.getUi()
+        .createAddonMenu()
+        .addItem('Show event planner', 'showSidebar')
+        .addToUi();
 }
 
 /**
@@ -25,7 +25,7 @@ function onOpen(e) {
  * @param {Object} e The event parameter for a simple onInstall trigger.
  */
 function onInstall(e) {
-  onOpen(e);
+    onOpen(e);
 }
 
 /**
@@ -33,27 +33,30 @@ function onInstall(e) {
  * project file.
  */
 function showSidebar() {
+    var properties = PropertiesService.getDocumentProperties();
+    var authInfo = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL);
+    var status = authInfo.getAuthorizationStatus();
 
- var authInfo = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL);
- var status = authInfo.getAuthorizationStatus();
-  Logger.log(status);
 
-  if (status === ScriptApp.AuthorizationStatus.REQUIRED) {
-    showAuthorisationPopup(authInfo);
-  } else {
-    var ui = HtmlService.createTemplateFromFile('Sidebar').evaluate().setTitle(SIDEBAR_TITLE);
-    FormApp.getUi().showSidebar(ui);
-  }
+    if (status === ScriptApp.AuthorizationStatus.REQUIRED) {
+        showAuthorisationPopup(authInfo);
+    } else if (properties.getProperty('guestAddTriggerId')) {
+        var Eui = HtmlService.createTemplateFromFile('SidebarError').evaluate().setTitle(SIDEBAR_TITLE);
+        FormApp.getUi().showSidebar(Eui);
+    } else {
+        var ui = HtmlService.createTemplateFromFile('Sidebar').evaluate().setTitle(SIDEBAR_TITLE);
+        FormApp.getUi().showSidebar(ui);
+    }
 }
 
 
 function showAuthorisationPopup(authInfo) {
-  var template = HtmlService.createTemplateFromFile('AuthorisationPopup');
-  template.authUrl = authInfo.getAuthorizationUrl();
-  template.evaluate();
-  template.setWidth(350);
-  template.setHeight(170);
-  FormApp.getUi().showModalDialog(ui, AUTH_POPUP_TITLE);
+    var template = HtmlService.createTemplateFromFile('AuthorisationPopup');
+    template.authUrl = authInfo.getAuthorizationUrl();
+    template.evaluate();
+    template.setWidth(350);
+    template.setHeight(170);
+    FormApp.getUi().showModalDialog(ui, AUTH_POPUP_TITLE);
 }
 
 /**
@@ -63,11 +66,11 @@ function showAuthorisationPopup(authInfo) {
  * @return {string} the converted date formatted as dd/mm/yyyy
  */
 function convertDate(date) {
-  var arr = [];
+    var arr = [];
 
-  arr = date.split('-');
+    arr = date.split('-');
 
-  return arr[2]+'/'+arr[1]+'/'+arr[0];
+    return arr[2] + '/' + arr[1] + '/' + arr[0];
 }
 
 /**
@@ -158,55 +161,56 @@ function checkValues(eventData) {
  *     determine the exact form item created.
  */
 function addFormItem(eventData) {
-  // Use data collected from sidebar to manipulate the form.
+    // Use data collected from sidebar to manipulate the form.
 
-  try{
-    checkValues(eventData);
-  }
-  catch(e){
-    throw new Error(e.message);
-  }
+    try {
+        checkValues(eventData);
+    }
+    catch (e) {
+        throw new Error(e.message);
+    }
 
-  var form = FormApp.getActiveForm(),
-      properties = PropertiesService.getDocumentProperties(),
-      item = form.addMultipleChoiceItem();
+    var form = FormApp.getActiveForm(),
+        properties = PropertiesService.getDocumentProperties(),
+        item = form.addMultipleChoiceItem();
 
-  eventData.description = form.getDescription();
-  eventData.title = form.getTitle();
+    // 1. Create calendar event
+    eventData.description = form.getDescription();
+    eventData.title = form.getTitle();
+    createCalendarEvent(eventData, properties);
 
-  var helptext = eventData.title + eventData.eventString;
+    // 2. set trigger
+   /* var trigger = ScriptApp.newTrigger('mailTheEvent')
+        .forForm(form)
+        .onFormSubmit()
+        .create();
+    properties.setProperty('guestAddTriggerId', trigger.getUniqueId());*/
 
-  item.setTitle('Are you attending?')
-    .setHelpText(helptext)
-      .setChoices([
-         item.createChoice('Yes'),
-         item.createChoice('No')
-      ])
-     .showOtherOption(false);
+    // 3. add item to form
+    var helptext = eventData.title + eventData.eventString;
 
-  // Create calendar event
-  createCalendarEvent(eventData, properties);
-
-//  if (ScriptApp.AuthMode === 'FULL') {
-    // only allowed in authmode full.
-    var trigger = ScriptApp.newTrigger('mailTheEvent')
-       .forForm(form)
-       .onFormSubmit()
-       .create();
-    properties.setProperty('triggerId', trigger.getUniqueId());
- // } else {
-   // Logger.log('No trigger has been set because of: ' + ScriptApp.AuthMode);
-  //}
-
+    item.setTitle('Are you attending?')
+        .setHelpText(helptext)
+        .setChoices([
+            item.createChoice('Yes'),
+            item.createChoice('No')
+        ])
+        .showOtherOption(false);
 }
 
 
 function mailTheEvent(e) {
 //  Logger.log(JSON.stringify(e.namedValues));
-  // TODO: read submitted data and decide whether or not this should occur and who the sender is.
-  var email='pieter.bogaerts@incentro.com';
+    // TODO: read submitted data and decide whether or not this should occur and who the sender is.
+    var email = 'pieter.bogaerts@incentro.com';
 
-  addGuestToEvent(email);
-  Logger.log(Session.getEffectiveUser().getEmail());
+    addGuestToEvent(email);
+    Logger.log(Session.getEffectiveUser().getEmail());
 
+}
+
+function showCompletedScreen() {
+  var succesUI = HtmlService.createTemplateFromFile('SidebarSuccess').evaluate().setTitle(SIDEBAR_TITLE);
+
+  FormApp.getUi().showSidebar(succesUI);
 }
