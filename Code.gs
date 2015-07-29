@@ -4,7 +4,7 @@
 
 
 var SIDEBAR_TITLE = 'Event Planner';
-
+var AUTH_POPUP_TITLE = 'Authorisation Request';
 
 /**
  * Adds a custom menu with items to show the sidebar and dialog.
@@ -34,10 +34,26 @@ function onInstall(e) {
  */
 function showSidebar() {
 
-  var ui = HtmlService.createTemplateFromFile('Sidebar')
-      .evaluate()
-      .setTitle(SIDEBAR_TITLE);
-  FormApp.getUi().showSidebar(ui);
+ var authInfo = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL);
+ var status = authInfo.getAuthorizationStatus();
+  Logger.log(status);
+
+  if (status === ScriptApp.AuthorizationStatus.REQUIRED) {
+    showAuthorisationPopup(authInfo);
+  } else {
+    var ui = HtmlService.createTemplateFromFile('Sidebar').evaluate().setTitle(SIDEBAR_TITLE);
+    FormApp.getUi().showSidebar(ui);
+  }
+}
+
+
+function showAuthorisationPopup(authInfo) {
+  var template = HtmlService.createTemplateFromFile('AuthorisationPopup');
+  template.authUrl = authInfo.getAuthorizationUrl();
+  template.evaluate();
+  template.setWidth(350);
+  template.setHeight(170);
+  FormApp.getUi().showModalDialog(ui, AUTH_POPUP_TITLE);
 }
 
 /**
@@ -56,7 +72,7 @@ function convertDate(date) {
 
 /**
  * Get autocomplete suggestions for the location field from the Places API
- * 
+ *
  * @param  {string} The query to search for
  * @return {Object} Object containing the results
  */
@@ -65,29 +81,29 @@ function getPlaces( query ) {
   var response = UrlFetchApp.fetch( completeUrl );
   var data = response.getContentText();
   var json = JSON.parse( data );
-    
+
   return json;
 }
 
 /**
  * Check if the user filled in all the required fields.
- * 
+ *
  * @param  {Object} Object containing the user input
  * @return {Object} Object containing the error messages
  */
-function checkValues(eventData) {  
+function checkValues(eventData) {
   if(!eventData.start || !eventData.start.date) {
     throw { message: 'The start date should not be empty.' }
   }
-  
+
   if(!eventData.start || !eventData.start.time) {
     throw { message: 'The start time should not be empty.' }
   }
-  
+
   if(!eventData.end || !eventData.end.date) {
     throw { message: 'The end date should not be empty.' }
   }
-  
+
   if(!eventData.end || !eventData.end.time) {
     throw { message: 'The end time should not be empty.' }
   }
@@ -101,7 +117,7 @@ function checkValues(eventData) {
  */
 function addFormItem(eventData) {
   // Use data collected from sidebar to manipulate the form.
-  
+
   try{
     checkValues(eventData);
   }
@@ -141,26 +157,26 @@ function addFormItem(eventData) {
   // Create calendar event
   createCalendarEvent(eventData, properties);
 
-  if (ScriptApp.AuthMode === 'FULL') {
+//  if (ScriptApp.AuthMode === 'FULL') {
     // only allowed in authmode full.
     var trigger = ScriptApp.newTrigger('mailTheEvent')
        .forForm(form)
        .onFormSubmit()
        .create();
     properties.setProperty('triggerId', trigger.getUniqueId());
-  } else {
-    Logger.log('No trigger has been set because of: ' + ScriptApp.AuthMode);
-  }
+ // } else {
+   // Logger.log('No trigger has been set because of: ' + ScriptApp.AuthMode);
+  //}
 
 }
 
 
-function mailTheEvent() {
-  var properties = PropertiesService.getDocumentProperties();
-  var email = 'pieter.bogaerts@incentro.com';//Session.getEffectiveUser().getEmail();
+function mailTheEvent(e) {
+//  Logger.log(JSON.stringify(e.namedValues));
+  // TODO: read submitted data and decide whether or not this should occur and who the sender is.
+  var email='pieter.bogaerts@incentro.com';
 
-  var event = properties.getProperty('event');
-  addGuest(email, event);
-
+  addGuestToEvent(email);
+  Logger.log(Session.getEffectiveUser().getEmail());
 
 }

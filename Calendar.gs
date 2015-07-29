@@ -19,15 +19,26 @@ function createCalendarEvent(eventData, properties) {
    */
   var calendar = CalendarApp.getDefaultCalendar();
   var ev = calendar.createEvent(title, startDate, endDate, options);
+  properties.setProperty('eventDate', eventData.start.datetime);
+
+  properties.setProperty('eventTitle', title);
   properties.setProperty('eventId', ev.getId());
-  properties.setProperty('event', ev);
+  properties.setProperty('calendarId', calendar.getId());
 }
 
 
-function addGuest(email, event) {
-  event.addGuest(email);
+function addGuestToEvent(email) {
+  var properties = PropertiesService.getDocumentProperties();
+  var cal = CalendarApp.getCalendarById(properties.getProperty('calendarId'));
+  var options = {search: properties.getProperty('eventTitle')};
+  var events = cal.getEventsForDay(new Date(properties.getProperty('eventDate')), options);
+  var lenevents = events.length;
+
+  var eventId = properties.getProperty('eventId');
+  for (var i = 0; i < lenevents; i++) {
+    if (events[i].getId() === eventId) {
+      events[i].addGuest(email);
+    }
+  }
 }
 
-
-
-//createCalendarEvent('Demo kijken', 'July 27, 2015 20:00:00', 'July 27, 2015 21:00:00', 'Lekker kijken', 'Incentro Rotterdam');
