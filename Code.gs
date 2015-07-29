@@ -123,26 +123,28 @@ function checkValues(eventData) {
   /* Check if the start date is set */
   if(!eventData.start || !eventData.start.date) {
     hasStartDate = false;
-    errorArray.push('The start date should not be empty.');
+    errorArray.push('Please enter a start date.');
   }
 
   /* Check if the start time is set */  
   if(!eventData.start || !eventData.start.time) {
-    errorArray.push('The start time should not be empty.');
+    errorArray.push('Please enter a start time.');
   }
   
   /* Check if the end date is set */
   if(!eventData.end || !eventData.end.date) {
     hasEndDate = false;
-    errorArray.push('The end date should not be empty.');
+    errorArray.push('Please enter an end date.');
   }
   
   /* Check if the end time is set */
   if(!eventData.end || !eventData.end.time) {
-    errorArray.push('The end time should not be empty.');
+    errorArray.push('Please enter an end time.');
   }
-  
-  /* Check if the start date is on or before the end date */
+
+
+
+    /* Check if the start date is on or before the end date */
   if(hasStartDate && hasEndDate && checkEventDate(eventData)) {
     errorArray.push(checkEventDate(eventData));
   }
