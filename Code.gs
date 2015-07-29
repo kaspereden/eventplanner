@@ -140,10 +140,8 @@ function checkValues(eventData) {
   }
   
   /* Check if the start date is on or before the end date */
-  if(hasStartDate && hasEndDate) {
-    if(checkEventDate(eventData)) {
-      errorArray.push(checkEventDate(eventData));
-    }
+  if(hasStartDate && hasEndDate && checkEventDate(eventData)) {
+    errorArray.push(checkEventDate(eventData));
   }
   
   if(errorArray.length) {
