@@ -90,7 +90,7 @@ function getPlaces( query ) {
 
 /**
  * Check if the users start date is before the end date
- * 
+ *
  * @param  {Object} Object containing the user input
  * @return {String} String containing the error messages
  */
@@ -99,13 +99,11 @@ function checkEventDate(eventData) {
        startTime = eventData.start.time.replace(/:/g,''),
        endDate = eventData.end.date.replace(/-/g, ''),
        endTime = eventData.end.time.replace(/:/g,'');
-  
-  if(eventData.start && eventData.start.date && eventData.end && eventData.end.date && parseInt(startDate, 10) > parseInt(endDate, 10)) {
-    return 'The start date should be on or before the end date.';
-  }
-  
-  if(eventData.eventType !== 'day' && eventData.start && eventData.start.date && eventData.start.time && eventData.end && eventData.end.date && eventData.end.time && parseInt(startDate+startTime, 10) >= parseInt(endDate+endTime, 10)) {
-    return 'The start date and time should be before the end date and time.';
+
+  if (parseInt(startDate, 10) > parseInt(endDate, 10)) {
+    return 'The end date should be on or after the start date.';
+  } else if(eventData.eventType !== 'day' && parseInt(startDate+startTime, 10) > parseInt(endDate+endTime, 10)) {
+    return 'The end date and time should be after the start date and time.';
   }
 }
 
@@ -118,41 +116,41 @@ function checkEventDate(eventData) {
 function checkValues(eventData) {
   var errorArray = [],
       hasStartDate = true,
-      hasEndDate = true;    
-  
-  /* Check if the start date is set */
+      hasEndDate = true;
+
+  // Check if the start date is set
   if(!eventData.start || !eventData.start.date) {
     hasStartDate = false;
     errorArray.push('Please enter a start date.');
   }
 
-  /* Check if the start time is set */  
+  // Check if the start time is set
   if(!eventData.start || !eventData.start.time) {
     errorArray.push('Please enter a start time.');
   }
-  
-  /* Check if the end date is set */
+
+  // Check if the end date is set
   if(!eventData.end || !eventData.end.date) {
     hasEndDate = false;
     errorArray.push('Please enter an end date.');
   }
-  
-  /* Check if the end time is set */
+
+  // Check if the end time is set
   if(!eventData.end || !eventData.end.time) {
     errorArray.push('Please enter an end time.');
   }
 
 
 
-    /* Check if the start date is on or before the end date */
+  // Check if the start date is on or before the end date
   if(hasStartDate && hasEndDate && checkEventDate(eventData)) {
     errorArray.push(checkEventDate(eventData));
   }
-  
+
   if(errorArray.length) {
     throw {
       message: errorArray.join('<br>')
-    } 
+    }
   }
 }
 
