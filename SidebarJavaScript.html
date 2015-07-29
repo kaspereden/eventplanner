@@ -45,6 +45,7 @@
 
     // Gather any information that needs to be sent to the server here.
     var eventData = {
+      eventType: document.getElementById('eventplanner-eventtype').value,
       start: {
         date: document.getElementById('eventplanner-start-date').value,
         time: document.getElementById('eventplanner-start-time').value
@@ -93,6 +94,23 @@
     if (classId) {
       notifArea.classList.add(classId);
     }
+  }
+
+  /**
+   * Update the interface when a user selects either a full day event or a partial day event
+   */
+  function addEventTypeListener(){
+    $('#eventplanner-eventtype').on('change', function(){
+      var value = $(this)[0].value,
+          className = value + '-event';
+
+      // Update the interface
+      if( value === 'partial' ){
+        $(this).parents('form').addClass(className).removeClass('day-event');
+      } else {
+        $(this).parents('form').addClass(className).removeClass('partial-event');
+      }
+    });
   }
 
   /**
@@ -190,6 +208,9 @@
   (function() {
     // Assign handler functions to sidebar elements here, if needed.
     document.getElementById('eventplanner-add-button').onclick = onAddItemClick;
+
+    // Start listening to changes on the event type select box
+    addEventTypeListener();
 
     // Start listening to changes on the location input field
     addLocationListener();
