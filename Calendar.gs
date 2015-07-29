@@ -1,22 +1,18 @@
 
 function createCalendarEvent(eventData, properties) {
   Logger.log(eventData.start.datetime);
-  /**
-   * Convert dateTime string to start & end dates
-   */
+
+  // Convert dateTime string to start & end dates
   var startDate = new Date(eventData.start.datetime);
   var endDate = new Date(eventData.end.datetime);
 
-  /**
-   * Convert description and location to options object
-   */
+  // Convert description and location to options object
   var options = {};
   options.description = eventData.description;
   options.location = eventData.location;
   var title = eventData.title;
-  /**
-   * Create calendar event
-   */
+
+  // Create calendar event
   var calendar = CalendarApp.getDefaultCalendar();
   var ev;
 
