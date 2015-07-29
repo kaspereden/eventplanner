@@ -86,26 +86,70 @@ function getPlaces( query ) {
 }
 
 /**
+ * Check if the users start date is before the end date
+ * 
+ * @param  {Object} Object containing the user input
+ * @return {String} String containing the error messages
+ */
+function checkEventDate(eventData) {
+   var startDate = eventData.start.date.replace(/-/g, ''),
+       startTime = eventData.start.time.replace(/:/g,''),
+       endDate = eventData.end.date.replace(/-/g, ''),
+       endTime = eventData.end.time.replace(/:/g,'');
+  
+  if(eventData.start && eventData.start.date && eventData.end && eventData.end.date && parseInt(startDate, 10) > parseInt(endDate, 10)) {
+    return 'The start date should be on or before the end date.';
+  }
+  
+  if(eventData.start && eventData.start.date && eventData.start.time && eventData.end && eventData.end.date && eventData.end.time && parseInt(startDate+startTime, 10) >= parseInt(endDate+endTime, 10)) {
+    return 'The start date and time should be before the end date and time.';
+  }
+}
+
+/**
  * Check if the user filled in all the required fields.
  *
  * @param  {Object} Object containing the user input
  * @return {Object} Object containing the error messages
  */
 function checkValues(eventData) {
+  var errorArray = [],
+      hasStartDate = true,
+      hasEndDate = true;    
+  
+  /* Check if the start date is set */
   if(!eventData.start || !eventData.start.date) {
-    throw { message: 'The start date should not be empty.' }
+    hasStartDate = false;
+    errorArray.push('The start date should not be empty.');
   }
 
+  /* Check if the start time is set */  
   if(!eventData.start || !eventData.start.time) {
-    throw { message: 'The start time should not be empty.' }
+    errorArray.push('The start time should not be empty.');
   }
-
+  
+  /* Check if the end date is set */
   if(!eventData.end || !eventData.end.date) {
-    throw { message: 'The end date should not be empty.' }
+    hasEndDate = false;
+    errorArray.push('The end date should not be empty.');
   }
-
+  
+  /* Check if the end time is set */
   if(!eventData.end || !eventData.end.time) {
-    throw { message: 'The end time should not be empty.' }
+    errorArray.push('The end time should not be empty.');
+  }
+  
+  /* Check if the start date is on or before the end date */
+  if(hasStartDate && hasEndDate) {
+    if(checkEventDate(eventData)) {
+      errorArray.push(checkEventDate(eventData));
+    }
+  }
+  
+  if(errorArray.length) {
+    throw {
+      message: errorArray.join('<br>')
+    } 
   }
 }
 
