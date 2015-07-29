@@ -5,6 +5,12 @@
   var $locationInput = $('#eventplanner-location'),
       $locationSuggestions = $('#eventplanner-location-suggestions');
 
+  /**
+   * This function formats the date and time to a readable javascript Date object
+   * 
+   * @param  {Object} dateObj Contains both date and time
+   * @return {String}         String parsable by the javascript new Date() function
+   */
   function formatDate(dateObj) {
      var date = dateObj.date.split('-');
      var time = dateObj.time + ':00';
@@ -48,12 +54,15 @@
         date: document.getElementById('eventplanner-end-date').value,
         time: document.getElementById('eventplanner-end-time').value
       },
-      location: document.getElementById('eventplanner-location').value
+      location: document.getElementById('eventplanner-location').value,
+      eventString: ''
     };
 
 
     eventData.start.datetime = formatDate(eventData.start);
     eventData.end.datetime = formatDate(eventData.end);
+
+    eventData.eventString = getEventString( eventData );
 
     // Send the value to the server and listen for a response.
     google.script.run
@@ -73,6 +82,75 @@
         .addFormItem(eventData);
   }
 
+
+  /**
+   * Get a nicely formatted string which tells the user where and when the event will take place
+   * 
+   * @param  {Object} Object containing all eventdata
+   * @return {String} A string telling the user when the event takes place and where
+   */
+  function getEventString( eventData ){
+    var eventString;
+
+    eventData.start.formattedDate = getDateString( eventData.start.datetime, eventData.end.datetime );
+    eventData.end.formattedDate = getDateString( eventData.end.datetime, eventData.start.datetime );
+
+    // Formatting for events taking place on a specific time
+    if( eventData.eventType === 'partial' ){
+      if( eventData.start.date === eventData.end.date ){
+        // Event takes place on the same day
+        eventString = ' will take place on ' + eventData.start.formattedDate + ' from ' + eventData.start.time + ' till ' + eventData.end.time;
+      } else {
+        // Event will span multiple dates
+        eventString = ' will take place from ' + eventData.start.formattedDate + ' ' + eventData.start.time + ' till ' + eventData.end.formattedDate + ' ' + eventData.end.time;
+      }
+    }
+
+    // Formatting for events taking place on a whole day or multiple days
+    if( eventData.eventType === 'day' ){
+      if( eventData.start.date === eventData.end.date ){
+        // Event is one full day
+        eventString = ' will take place on ' + eventData.start.formattedDate;
+      } else {
+        // Event will span multiple full days
+        eventString = ' will take place from ' + eventData.start.formattedDate + ' till ' + eventData.end.formattedDate;
+      }
+    }
+
+    // Formatting for the provided location
+    if( eventData.location ){
+      eventString += ' at ' + eventData.location + '.';
+    } else {
+      eventString += '.';
+    }
+
+    return eventString;
+  }
+
+  /**
+   * This function will format a new date string
+   * 
+   * @param  {String} The string to format
+   * @param  {String} The other date string
+   * @return {String} The nicely formatted date string
+   */
+  function getDateString( datetime, otherdatetime ){
+    var dateString = '',
+        options = {
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric' 
+        },
+        dateObject = new Date( datetime ),
+        otherDateObject = new Date( otherdatetime );
+
+    if( dateObject.getYear() !== otherDateObject.getYear() ){
+      options.year = 'numeric';
+    }
+
+    // TODO: locale based on user locale
+    return dateObject.toLocaleDateString('en-US', options);
+  }
 
   /**
    * Displays the given status message in the sidebar.

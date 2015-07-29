@@ -129,19 +129,10 @@ function addFormItem(eventData) {
       properties = PropertiesService.getDocumentProperties(),
       item = form.addMultipleChoiceItem();
 
-  var helptext = '';
-  var startDate = convertDate(eventData.start.date);
-  var startTime = eventData.start.time;
-  var endDate = convertDate(eventData.end.date);
-  var endTime = eventData.end.time;
-  var location = eventData.location;
+  eventData.description = form.getDescription();
+  eventData.title = form.getTitle();
 
-  /* Events with a location */
-  if(location) {
-    helptext = 'The event will begin at: ' + startDate + ' ' + startTime + ' and will end at : ' + endDate + ' ' + endTime + '. The location of the event is: ' + location;
-  } else {
-    helptext = 'The event will begin at: ' + startDate + ' ' + startTime + ' and will end at : ' + endDate + ' ' + endTime + '.';
-  }
+  var helptext = eventData.title + eventData.eventString;
 
   item.setTitle('Are you attending?')
     .setHelpText(helptext)
@@ -150,9 +141,6 @@ function addFormItem(eventData) {
          item.createChoice('No')
       ])
      .showOtherOption(false);
-
-  eventData.description = form.getDescription();
-  eventData.title = form.getTitle();
 
   // Create calendar event
   createCalendarEvent(eventData, properties);
