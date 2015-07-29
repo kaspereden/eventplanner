@@ -61,7 +61,7 @@ function convertDate(date) {
  * @return {Object} Object containing the results
  */
 function getPlaces( query ) {
-  var completeUrl = 'https://maps.googleapis.com/maps/api/place/autocomplete/json?key=AIzaSyD8dAv-lAB0PeLifnE_K0_aCKylvlvZgck&input=' + query;
+  var completeUrl = 'https://maps.googleapis.com/maps/api/place/autocomplete/json?key=AIzaSyD8dAv-lAB0PeLifnE_K0_aCKylvlvZgck&language=' + Session.getActiveUserLocale() + '&input=' + query;
   var response = UrlFetchApp.fetch( completeUrl );
   var data = response.getContentText();
   var json = JSON.parse( data );
