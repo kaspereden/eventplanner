@@ -171,8 +171,7 @@ function addFormItem(eventData) {
     }
 
     var form = FormApp.getActiveForm(),
-        properties = PropertiesService.getDocumentProperties(),
-        item = form.addMultipleChoiceItem();
+        properties = PropertiesService.getDocumentProperties();
 
     // 1. Create calendar event
     eventData.description = form.getDescription();
@@ -180,37 +179,46 @@ function addFormItem(eventData) {
     createCalendarEvent(eventData, properties);
 
     // 2. set trigger
-   /* var trigger = ScriptApp.newTrigger('mailTheEvent')
+    var trigger = ScriptApp.newTrigger('addGuestOnSubmit')
         .forForm(form)
         .onFormSubmit()
         .create();
-    properties.setProperty('guestAddTriggerId', trigger.getUniqueId());*/
+    properties.setProperty('guestAddTriggerId', trigger.getUniqueId());
 
     // 3. add item to form
     var helptext = eventData.title + eventData.eventString;
+    var item = form.addMultipleChoiceItem();
 
-    item.setTitle('Are you attending?')
+    item.setTitle('Will you be there?')
         .setHelpText(helptext)
+        .setRequired(true)
         .setChoices([
             item.createChoice('Yes'),
             item.createChoice('No')
         ])
         .showOtherOption(false);
+
+    form.setCollectEmail(true);
 }
 
 
-function mailTheEvent(e) {
-//  Logger.log(JSON.stringify(e.namedValues));
-    // TODO: read submitted data and decide whether or not this should occur and who the sender is.
-    var email = 'pieter.bogaerts@incentro.com';
+function addGuestOnSubmit(e) {
+    var form = FormApp.getActiveForm();
+    var responses = form.getResponses();
+    var last = responses.length-1;
+    var email = responses[last].getRespondentEmail()
 
-    addGuestToEvent(email);
-    Logger.log(Session.getEffectiveUser().getEmail());
+    Logger.log(email);
+
+    if (email) {
+        addGuestToEvent(email);
+    }
+    Logger.log('email', email);
 
 }
 
 function showCompletedScreen() {
-  var succesUI = HtmlService.createTemplateFromFile('SidebarSuccess').evaluate().setTitle(SIDEBAR_TITLE);
+    var succesUI = HtmlService.createTemplateFromFile('SidebarSuccess').evaluate().setTitle(SIDEBAR_TITLE);
 
-  FormApp.getUi().showSidebar(succesUI);
+    FormApp.getUi().showSidebar(succesUI);
 }
