@@ -324,6 +324,14 @@
         return i;
     }
 
+    var endTime = '';
+
+    if( h === 23 ){
+      endTime = '23:59';
+    } else {
+      endTime = update(h + 1) +':00';
+    }
+
     month = update(month);
     day = update(day);
     h = update(h);
@@ -332,7 +340,7 @@
     var date = year + '-' + month + '-' + day;
 
     document.getElementById('eventplanner-start-time').value = time;
-    document.getElementById('eventplanner-end-time').value = time;
+    document.getElementById('eventplanner-end-time').value = endTime;
 
     document.getElementById('eventplanner-start-date').value = date;
     document.getElementById('eventplanner-end-date').value = date;
