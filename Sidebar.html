@@ -4,46 +4,46 @@
 
 <!-- Below is the HTML code that defines the sidebar element structure. -->
 <div class="sidebar branding-below">
-	<p><?= translations.nl.sidebar.intro ?></p>
+	<p><?= translations[ lang ].sidebar.intro ?></p>
 	<form class="block partial-event">
 		<div class="block form-group">
-			<label for="eventplanner-eventtype">What kind of event would you like to add</label>
+			<label for="eventplanner-eventtype"><?= translations[ lang ].sidebar.typeLabel ?></label>
 	  		<select id="eventplanner-eventtype">
-				<option value="partial">An event with a start and end time</option>
-				<option value="day">Day-long event</option>
+				<option value="partial"><?= translations[ lang ].sidebar.partial ?></option>
+				<option value="day"><?= translations[ lang ].sidebar.day ?></option>
 	  		</select>
 		</div>
 		<div class="block form-group">
-			<label for="eventplanner-title">Title</label>
+			<label for="eventplanner-title"><?= translations[ lang ].sidebar.titleLabel ?></label>
 			<input type="text" id="eventplanner-title">
 		</div>
 		<div class="block">
 			<div class="inline form-group start-date-group">
-				<label for="eventplanner-start-date">Start date</label>
+				<label for="eventplanner-start-date"><?= translations[ lang ].sidebar.startDateLabel ?></label>
 				<input type="date" id="eventplanner-start-date">
 			</div>
 			<div class="inline form-group start-time-group">
-				<label for="eventplanner-start-time">Start time</label>
+				<label for="eventplanner-start-time"><?= translations[ lang ].sidebar.startTimeLabel ?></label>
 				<input type="time" id="eventplanner-start-time">
 			</div>
 		</div>
 		<div class="block">
 			<div class="inline form-group end-date-group">
-				<label for="eventplanner-end-date">End date</label>
+				<label for="eventplanner-end-date"><?= translations[ lang ].sidebar.endDateLabel ?></label>
 				<input type="date" id="eventplanner-end-date">
 			</div>
 			<div class="inline form-group end-time-group">
-				<label for="eventplanner-end-time">End time</label>
+				<label for="eventplanner-end-time"><?= translations[ lang ].sidebar.endTimeLabel ?></label>
 				<input type="time" id="eventplanner-end-time">
 			</div>
 		</div>
 		<div class="block form-group">
-			<label for="eventplanner-location">Location</label>
+			<label for="eventplanner-location"><?= translations[ lang ].sidebar.locationLabel ?></label>
 			<input type="text" id="eventplanner-location">
 			<ul class="eventplanner-location-suggestions" id="eventplanner-location-suggestions"></ul>
 		</div>
 		<div class="block">
-			<button class="action" id="eventplanner-add-button">Add event</button>
+			<button class="action" id="eventplanner-add-button"><?= translations[ lang ].sidebar.addButton ?></button>
 		</div>
 	</form>
 	<div class="block">

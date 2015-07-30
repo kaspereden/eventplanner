@@ -4,7 +4,9 @@
 
   var $locationInput = $('#eventplanner-location'),
       $locationSuggestions = $('#eventplanner-location-suggestions'),
-      lastQuery = '';
+      lastQuery = '',
+      userLanguage,
+      eventStringTranslations;
 
   /**
    * This function formats the date and time to a readable javascript Date object
@@ -104,10 +106,10 @@
     if( eventData.eventType === 'partial' ){
       if( eventData.start.date === eventData.end.date ){
         // Event takes place on the same day
-        eventString = eventData.title + ' will take place on ' + eventData.start.formattedDate + ' from ' + eventData.start.time + ' till ' + eventData.end.time;
+        eventString = eventData.title + eventStringTranslations.placeOn + eventData.start.formattedDate + eventStringTranslations.from + eventData.start.time + eventStringTranslations.till + eventData.end.time;
       } else {
         // Event will span multiple dates
-        eventString = eventData.title + ' will take place from ' + eventData.start.formattedDate + ' ' + eventData.start.time + ' till ' + eventData.end.formattedDate + ' ' + eventData.end.time;
+        eventString = eventData.title + eventStringTranslations.placeFrom + eventData.start.formattedDate + ' ' + eventData.start.time + eventStringTranslations.till + eventData.end.formattedDate + ' ' + eventData.end.time;
       }
     }
 
@@ -115,16 +117,16 @@
     if( eventData.eventType === 'day' ){
       if( eventData.start.date === eventData.end.date ){
         // Event is one full day
-        eventString = eventData.title + ' will take place on ' + eventData.start.formattedDate;
+        eventString = eventData.title + eventStringTranslations.placeOn + eventData.start.formattedDate;
       } else {
         // Event will span multiple full days
-        eventString = eventData.title + ' will take place from ' + eventData.start.formattedDate + ' till ' + eventData.end.formattedDate;
+        eventString = eventData.title + eventStringTranslations.placeFrom + eventData.start.formattedDate + eventStringTranslations.till + eventData.end.formattedDate;
       }
     }
 
     // Formatting for the provided location
     if( eventData.location ){
-      eventString += ' at ' + eventData.location + '.';
+      eventString += eventStringTranslations.at + eventData.location + '.';
     } else {
       eventString += '.';
     }
@@ -153,8 +155,7 @@
       options.year = 'numeric';
     }
 
-    // TODO: locale based on user locale
-    return dateObject.toLocaleDateString('en-US', options);
+    return dateObject.toLocaleDateString( userLanguage, options);
   }
 
   /**
@@ -292,10 +293,30 @@
     return (number%2 == 0) ? true : false;
   };
 
+  function getUserLanguage(){
+    google.script.run
+        .withSuccessHandler( function(lang) {
+          userLanguage = lang;
+          getEventStringTranslations( lang );
+        })
+        .getLang();
+  }
+
+  function getEventStringTranslations(){
+    google.script.run
+        .withSuccessHandler( function( eventStrings ) {
+          eventStringTranslations = eventStrings;
+        })
+        .getEventStringTranslations( userLanguage );
+  }
+
   /**
    * Run initializations on sidebar load.
    */
   (function() {
+    // Get the user language
+    getUserLanguage();
+
     // Assign handler functions to sidebar elements here, if needed.
     document.getElementById('eventplanner-add-button').onclick = onAddItemClick;
 

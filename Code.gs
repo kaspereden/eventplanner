@@ -37,16 +37,34 @@ function showSidebar() {
     var authInfo = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL);
     var status = authInfo.getAuthorizationStatus();
 
-
     if (status === ScriptApp.AuthorizationStatus.REQUIRED) {
         showAuthorisationPopup(authInfo);
-    } else if (properties.getProperty('guestAddTriggerId')) {
-        var Eui = HtmlService.createTemplateFromFile('SidebarError').evaluate().setTitle(SIDEBAR_TITLE);
-        FormApp.getUi().showSidebar(Eui);
     } else {
-        var ui = HtmlService.createTemplateFromFile('Sidebar').evaluate().setTitle(SIDEBAR_TITLE);
-        FormApp.getUi().showSidebar(ui);
+      var template;
+      var html;
+
+      if( properties.getProperty('guestAddTriggerId') ) {
+        template = HtmlService.createTemplateFromFile('SidebarError');
+      } else {
+        template = HtmlService.createTemplateFromFile('Sidebar');
+      }
+
+      template.lang = getLang();
+      html = template.evaluate().setTitle(SIDEBAR_TITLE);
+      FormApp.getUi().showSidebar(html);
     }
+}
+
+function getLang(){
+  var lang = Session.getActiveUserLocale();
+  var supportedLanguages = ['nl', 'en', 'es', 'tr'];
+
+  // If the language is not supported use english as fallback
+  if( supportedLanguages.indexOf( lang ) === -1 ){
+    lang = 'en';
+  }
+
+  return lang;
 }
 
 
@@ -180,7 +198,8 @@ function addFormItem(eventData) {
     }
 
     var form = FormApp.getActiveForm(),
-        properties = PropertiesService.getDocumentProperties();
+        properties = PropertiesService.getDocumentProperties(),
+        lang = getLang();
 
     // 1. Create calendar event
     eventData.description = form.getDescription();
@@ -196,16 +215,16 @@ function addFormItem(eventData) {
     // 3. add item to form
     var item = form.addMultipleChoiceItem();
 
-    item.setTitle('Will you be there?')
+    item.setTitle( translations[ lang ].formItem.title )
         .setHelpText(eventData.eventString)
         .setRequired(true)
         .setChoices([
-            item.createChoice('Yes'),
-            item.createChoice('No')
+            item.createChoice( translations[ lang ].formItem.yes ),
+            item.createChoice( translations[ lang ].formItem.no )
         ])
         .showOtherOption(false);
 
-    properties.setProperty('attendingTrue', 'Yes');
+    properties.setProperty('attendingTrue', translations[ lang ].formItem.yes );
 
     properties.setProperty('itemId', item.getId());
     form.setCollectEmail(true);
@@ -293,7 +312,9 @@ function addGuestOnSubmit(e) {
 }
 
 function showCompletedScreen() {
-    var succesUI = HtmlService.createTemplateFromFile('SidebarSuccess').evaluate().setTitle(SIDEBAR_TITLE);
+    var template = HtmlService.createTemplateFromFile('SidebarSuccess');
+    template.lang = getLang();
 
-    FormApp.getUi().showSidebar(succesUI);
+    var html = template.evaluate().setTitle(SIDEBAR_TITLE);
+    FormApp.getUi().showSidebar(html);
 }
