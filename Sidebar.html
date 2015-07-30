@@ -50,16 +50,7 @@
   		<div id="eventplanner-notification-area"></div>
   	</div>
 </div>
-<div class="sidebar bottom">
-  <div class="block">
-    <p>Forms add-on powered by</p>
-  </div>
-  <div class="block">
-    <a href="http://www.incentro.com/" target="_blank">
-      <img alt="Incentro" class="logo" width="100" src="http://www.incentro.com/static/incentropresentation/image/logo.png">
-    </a>
-  </div>
-</div>
+<?!= HtmlService.createHtmlOutputFromFile('Footer').getContent(); ?>
 
 <!-- Use a templated HTML printing scriptlet to import JavaScript -->
 <?!= HtmlService.createHtmlOutputFromFile('SidebarJavaScript').getContent(); ?>
