@@ -8,6 +8,7 @@ function createCalendarEvent(eventData, properties) {
   var options = {};
   options.description = eventData.description;
   options.location = eventData.location;
+  options.sendInvites = true;
   var title = eventData.title;
 
   // Create calendar event
@@ -23,6 +24,7 @@ function createCalendarEvent(eventData, properties) {
     options.end = {
       date: addOneDay( endDate )
     }
+    options.sendNotifications = true;
     ev = Calendar.Events.insert(options, 'primary');
     calendarId = ev.id + '@google.com';
   } else {
