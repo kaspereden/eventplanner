@@ -1,7 +1,5 @@
 
 function createCalendarEvent(eventData, properties) {
-  Logger.log(eventData.start.datetime);
-
   // Convert dateTime string to start & end dates
   var startDate = new Date(eventData.start.datetime);
   var endDate = new Date(eventData.end.datetime);
