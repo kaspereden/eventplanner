@@ -17,13 +17,14 @@ function createCalendarEvent(eventData, properties) {
   var ev;
 
   if(eventData.eventType === 'day'){
-    if(startDate.getDate() === endDate.getDate()){
-      ev = calendar.createAllDayEvent(title, startDate, options);
-    } else {
-      startDate.setHours( 0, 0, 0 );
-      endDate.setHours( 23, 59, 59 );
-      ev = calendar.createEvent(title, startDate, endDate, options);
+    options.summary = title;
+    options.start = {
+      date: eventData.start.date
     }
+    options.end = {
+      date: addOneDay( endDate )
+    }
+    ev = Calendar.Events.insert(options, 'primary');
   } else {
     ev = calendar.createEvent(title, startDate, endDate, options);
   }
@@ -35,6 +36,18 @@ function createCalendarEvent(eventData, properties) {
   properties.setProperty('calendarId', calendar.getId());
 }
 
+function addOneDay( date ){
+  date.setDate(date.getDate() + 1);
+
+  var month = '' + (date.getMonth() + 1),
+      day = '' + date.getDate(),
+      year = date.getFullYear();
+
+  if (month.length < 2) month = '0' + month;
+  if (day.length < 2) day = '0' + day;
+
+  return [year, month, day].join('-');
+}
 
 function addGuestToEvent(email) {
   var properties = PropertiesService.getDocumentProperties();
