@@ -232,7 +232,7 @@ function checkFormItemValue(){
     }
   }
 
-  return attendingTrue;
+  return hasChanged;
 }
 
 function checkEventDeletion(){
