@@ -205,8 +205,34 @@ function addFormItem(eventData) {
         ])
         .showOtherOption(false);
 
+    properties.setProperty('attendingTrue', 'Yes');
+
     properties.setProperty('itemId', item.getId());
     form.setCollectEmail(true);
+}
+
+function checkFormItemValue(){
+  var hasChanged = false;
+
+  var properties = PropertiesService.getDocumentProperties();
+  var itemId = parseFloat( properties.getProperty('itemId') );
+  var attendingTrue = properties.getProperty('attendingTrue');
+
+  var form = FormApp.getActiveForm();
+  var items = form.getItems();
+
+  for (var i = 0; i < items.length; i++) {
+    if( items[i].getId() === itemId ){
+      var firstChoice = items[i].asMultipleChoiceItem().getChoices()[0].getValue();
+      if( firstChoice !== attendingTrue ){
+        hasChanged = true;
+        properties.setProperty('attendingTrue', firstChoice);
+      }
+      break;
+    }
+  }
+
+  return attendingTrue;
 }
 
 function checkEventDeletion(){
@@ -221,6 +247,7 @@ function checkEventDeletion(){
   for (var i = 0; i < items.length; i++) {
     if( items[i].getId() === itemId ){
       isDeleted = false;
+      break;
     }
   }
 
@@ -254,7 +281,7 @@ function addGuestOnSubmit(e) {
 
     for (var i = 0; i < items.length; i++) {
       if (items[i].getItem().getId() === parseFloat(properties.getProperty('itemId'))) {
-        isAttending = items[i].getResponse() === 'Yes';
+        isAttending = items[i].getResponse() === properties.getProperty('attendingTrue');
         break;
       }
     }
