@@ -205,6 +205,7 @@ function addFormItem(eventData) {
         ])
         .showOtherOption(false);
 
+    properties.setProperty('itemId', item.getId());
     form.setCollectEmail(true);
 }
 
@@ -213,14 +214,22 @@ function addGuestOnSubmit(e) {
     var form = FormApp.getActiveForm();
     var responses = form.getResponses();
     var last = responses.length-1;
-    var email = responses[last].getRespondentEmail()
+    var response = responses[last];
+    var email = response.getRespondentEmail()
+    var items = response.getItemResponses();
+    var isAttending = false;
+    var properties = PropertiesService.getDocumentProperties();
 
-    Logger.log(email);
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].getItem().getId() === parseFloat(properties.getProperty('itemId'))) {
+        isAttending = items[i].getResponse() === 'Yes';
+        break;
+      }
+    }
 
-    if (email) {
+    if (email && isAttending) {
         addGuestToEvent(email);
     }
-    Logger.log('email', email);
 
 }
 
