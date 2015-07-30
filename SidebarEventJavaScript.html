@@ -1,0 +1,31 @@
+<script>
+  var eventDeletionInterval;
+
+  function addEventDeletionInterval(){
+    // Check every 10 seconds
+    eventDeletionInterval = setInterval( checkEventDeletion, 10000 );
+  }
+
+  function removeEventDeletionInterval(){
+    clearInterval( eventDeletionInterval );
+  }
+
+  function checkEventDeletion(){
+    google.script.run
+      .withSuccessHandler( function( isDeleted ){
+        if( isDeleted ){
+          google.script.run.showSidebar();
+        }
+      })
+      .checkEventDeletion();
+  }
+
+  /**
+   * Run initializations on sidebar load.
+   */
+  (function() {
+    checkEventDeletion();
+    addEventDeletionInterval();
+  })();
+
+</script>

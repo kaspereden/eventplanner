@@ -209,6 +209,38 @@ function addFormItem(eventData) {
     form.setCollectEmail(true);
 }
 
+function checkEventDeletion(){
+  var isDeleted = true;
+
+  var properties = PropertiesService.getDocumentProperties();
+  var itemId = parseFloat( properties.getProperty('itemId') );
+
+  var form = FormApp.getActiveForm();
+  var items = form.getItems();
+
+  for (var i = 0; i < items.length; i++) {
+    if( items[i].getId() === itemId ){
+      isDeleted = false;
+    }
+  }
+
+  if(isDeleted){
+    // 1. Remove calendar event
+    removeCalendarEvent();
+
+    // 2. Remove triggers
+    removeAllTriggers();
+  }
+
+  return isDeleted;
+}
+
+function removeAllTriggers(){
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    ScriptApp.deleteTrigger(triggers[i]);
+  }
+}
 
 function addGuestOnSubmit(e) {
     var form = FormApp.getActiveForm();

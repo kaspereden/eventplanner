@@ -47,7 +47,7 @@ function addOneDay( date ){
   return [year, month, day].join('-');
 }
 
-function addGuestToEvent(email) {
+function getCalendarEvent(){
   var properties = PropertiesService.getDocumentProperties();
   var cal = CalendarApp.getCalendarById(properties.getProperty('calendarId'));
   var options = {search: properties.getProperty('eventTitle')};
@@ -57,8 +57,20 @@ function addGuestToEvent(email) {
   var eventId = properties.getProperty('eventId');
   for (var i = 0; i < lenevents; i++) {
     if (events[i].getId() === eventId) {
-      events[i].addGuest(email);
+      return events[i];
     }
   }
+}
+
+function removeCalendarEvent(){
+  var calendarEvent = getCalendarEvent();
+
+  calendarEvent.deleteEvent();
+}
+
+function addGuestToEvent(email) {
+  var calendarEvent = getCalendarEvent();
+
+  calendarEvent.addGuest(email);
 }
 
