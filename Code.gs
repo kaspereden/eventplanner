@@ -111,7 +111,7 @@ function checkEventDate(eventData) {
 
   if (parseInt(startDate, 10) > parseInt(endDate, 10)) {
     return 'The end date should be on or after the start date.';
-  } else if(eventData.eventType !== 'day' && parseInt(startDate+startTime, 10) > parseInt(endDate+endTime, 10)) {
+  } else if(eventData.eventType !== 'day' && parseInt(startDate+startTime, 10) >= parseInt(endDate+endTime, 10)) {
     return 'The end date and time should be after the start date and time.';
   }
 }
