@@ -70,3 +70,72 @@ var translations = {
 function getEventStringTranslations( language ){
   return translations[ language ].eventString;
 }
+
+function addGoogleTranslations(){
+  translations.es = {
+    "authorisationpopup": {
+      "intro": LanguageApp.translate( translations.en.authorisationpopup.intro , 'en', 'es' ),
+      "link": LanguageApp.translate( translations.en.authorisationpopup.link , 'en', 'es' )
+    },
+    "sidebar": {
+      "intro": LanguageApp.translate( translations.en.sidebar.intro , 'en', 'es' ),
+      "typeLabel": LanguageApp.translate( translations.en.sidebar.typeLabel , 'en', 'es' ),
+      "partial": LanguageApp.translate( translations.en.sidebar.partial , 'en', 'es' ),
+      "day": LanguageApp.translate( translations.en.sidebar.day , 'en', 'es' ),
+      "titleLabel": LanguageApp.translate( translations.en.sidebar.titleLabel , 'en', 'es' ),
+      "startDateLabel": LanguageApp.translate( translations.en.sidebar.startDateLabel , 'en', 'es' ),
+      "startTimeLabel": LanguageApp.translate( translations.en.sidebar.startTimeLabel , 'en', 'es' ),
+      "endDateLabel": LanguageApp.translate( translations.en.sidebar.endDateLabel , 'en', 'es' ),
+      "endTimeLabel": LanguageApp.translate( translations.en.sidebar.endTimeLabel , 'en', 'es' ),
+      "locationLabel": LanguageApp.translate( translations.en.sidebar.locationLabel , 'en', 'es' ),
+      "addButton": LanguageApp.translate( translations.en.sidebar.addButton , 'en', 'es' )
+    },
+    "success": LanguageApp.translate( translations.en.success, 'en', 'es' ),
+    "error": LanguageApp.translate( translations.en.error, 'en', 'es' ),
+    "eventString": {
+      "placeOn": LanguageApp.translate( translations.en.eventString.placeOn, 'en', 'es' ),
+      "placeFrom": LanguageApp.translate( translations.en.eventString.placeFrom, 'en', 'es' ),
+      "from": LanguageApp.translate( translations.en.eventString.from, 'en', 'es' ),
+      "till": LanguageApp.translate( translations.en.eventString.till, 'en', 'es' ),
+      "at": LanguageApp.translate( translations.en.eventString.at, 'en', 'es' )
+    },
+    "formItem": {
+      "title": LanguageApp.translate( translations.en.title, 'en', 'es' ),
+      "yes": LanguageApp.translate( translations.en.yes, 'en', 'es' ),
+      "no": LanguageApp.translate( translations.en.no, 'en', 'es' )
+    }
+  };
+  translations.tr = {
+    "authorisationpopup": {
+      "intro": LanguageApp.translate( translations.en.authorisationpopup.intro , 'en', 'tr' ),
+      "link": LanguageApp.translate( translations.en.authorisationpopup.link , 'en', 'tr' )
+    },
+    "sidebar": {
+      "intro": LanguageApp.translate( translations.en.sidebar.intro , 'en', 'tr' ),
+      "typeLabel": LanguageApp.translate( translations.en.sidebar.typeLabel , 'en', 'tr' ),
+      "partial": LanguageApp.translate( translations.en.sidebar.partial , 'en', 'tr' ),
+      "day": LanguageApp.translate( translations.en.sidebar.day , 'en', 'tr' ),
+      "titleLabel": LanguageApp.translate( translations.en.sidebar.titleLabel , 'en', 'tr' ),
+      "startDateLabel": LanguageApp.translate( translations.en.sidebar.startDateLabel , 'en', 'tr' ),
+      "startTimeLabel": LanguageApp.translate( translations.en.sidebar.startTimeLabel , 'en', 'tr' ),
+      "endDateLabel": LanguageApp.translate( translations.en.sidebar.endDateLabel , 'en', 'tr' ),
+      "endTimeLabel": LanguageApp.translate( translations.en.sidebar.endTimeLabel , 'en', 'tr' ),
+      "locationLabel": LanguageApp.translate( translations.en.sidebar.locationLabel , 'en', 'tr' ),
+      "addButton": LanguageApp.translate( translations.en.sidebar.addButton , 'en', 'tr' )
+    },
+    "success": LanguageApp.translate( translations.en.success , 'en', 'tr' ),
+    "error": LanguageApp.translate( translations.en.error , 'en', 'tr' ),
+    "eventString": {
+      "placeOn": LanguageApp.translate( translations.en.eventString.placeOn, 'en', 'tr' ),
+      "placeFrom": LanguageApp.translate( translations.en.eventString.placeFrom, 'en', 'tr' ),
+      "from": LanguageApp.translate( translations.en.eventString.from, 'en', 'tr' ),
+      "till": LanguageApp.translate( translations.en.eventString.till, 'en', 'tr' ),
+      "at": LanguageApp.translate( translations.en.eventString.at, 'en', 'tr' )
+    },
+    "formItem": {
+      "title": LanguageApp.translate( translations.en.title, 'en', 'tr' ),
+      "yes": LanguageApp.translate( translations.en.yes, 'en', 'tr' ),
+      "no": LanguageApp.translate( translations.en.no, 'en', 'tr' )
+    }
+  };
+}

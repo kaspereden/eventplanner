@@ -302,12 +302,12 @@
         .getLang();
   }
 
-  function getEventStringTranslations(){
+  function getEventStringTranslations( lang ){
     google.script.run
         .withSuccessHandler( function( eventStrings ) {
           eventStringTranslations = eventStrings;
         })
-        .getEventStringTranslations( userLanguage );
+        .getEventStringTranslations( lang );
   }
 
   /**
