@@ -89,6 +89,15 @@ function getPlaces( query ) {
 }
 
 /**
+ * Fetch the title of the form
+ *
+ * @return {String} The title of the current form
+ */
+function getTitle() {
+  return FormApp.getActiveForm().getTitle();
+}
+
+/**
  * Check if the users start date is before the end date
  *
  * @param  {Object} Object containing the user input
@@ -175,7 +184,6 @@ function addFormItem(eventData) {
 
     // 1. Create calendar event
     eventData.description = form.getDescription();
-    eventData.title = form.getTitle();
     createCalendarEvent(eventData, properties);
 
     // 2. set trigger
@@ -186,11 +194,10 @@ function addFormItem(eventData) {
     properties.setProperty('guestAddTriggerId', trigger.getUniqueId());
 
     // 3. add item to form
-    var helptext = eventData.title + eventData.eventString;
     var item = form.addMultipleChoiceItem();
 
     item.setTitle('Will you be there?')
-        .setHelpText(helptext)
+        .setHelpText(eventData.eventString)
         .setRequired(true)
         .setChoices([
             item.createChoice('Yes'),

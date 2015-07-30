@@ -8,7 +8,7 @@
 
   /**
    * This function formats the date and time to a readable javascript Date object
-   * 
+   *
    * @param  {Object} dateObj Contains both date and time
    * @return {String}         String parsable by the javascript new Date() function
    */
@@ -44,7 +44,7 @@
    */
   function onAddItemClick() {
     this.disabled = true;
-    
+
     // Remove the location suggestions
     $locationSuggestions.empty();
     $locationSuggestions.removeClass('active');
@@ -52,6 +52,7 @@
     // Gather any information that needs to be sent to the server here.
     var eventData = {
       eventType: document.getElementById('eventplanner-eventtype').value,
+      title: document.getElementById('eventplanner-title').value,
       start: {
         date: document.getElementById('eventplanner-start-date').value,
         time: document.getElementById('eventplanner-start-time').value
@@ -90,7 +91,7 @@
 
   /**
    * Get a nicely formatted string which tells the user where and when the event will take place
-   * 
+   *
    * @param  {Object} Object containing all eventdata
    * @return {String} A string telling the user when the event takes place and where
    */
@@ -104,10 +105,10 @@
     if( eventData.eventType === 'partial' ){
       if( eventData.start.date === eventData.end.date ){
         // Event takes place on the same day
-        eventString = ' will take place on ' + eventData.start.formattedDate + ' from ' + eventData.start.time + ' till ' + eventData.end.time;
+        eventString = eventData.title + ' will take place on ' + eventData.start.formattedDate + ' from ' + eventData.start.time + ' till ' + eventData.end.time;
       } else {
         // Event will span multiple dates
-        eventString = ' will take place from ' + eventData.start.formattedDate + ' ' + eventData.start.time + ' till ' + eventData.end.formattedDate + ' ' + eventData.end.time;
+        eventString = eventData.title + ' will take place from ' + eventData.start.formattedDate + ' ' + eventData.start.time + ' till ' + eventData.end.formattedDate + ' ' + eventData.end.time;
       }
     }
 
@@ -115,10 +116,10 @@
     if( eventData.eventType === 'day' ){
       if( eventData.start.date === eventData.end.date ){
         // Event is one full day
-        eventString = ' will take place on ' + eventData.start.formattedDate;
+        eventString = eventData.title + ' will take place on ' + eventData.start.formattedDate;
       } else {
         // Event will span multiple full days
-        eventString = ' will take place from ' + eventData.start.formattedDate + ' till ' + eventData.end.formattedDate;
+        eventString = eventData.title + ' will take place from ' + eventData.start.formattedDate + ' till ' + eventData.end.formattedDate;
       }
     }
 
@@ -134,7 +135,7 @@
 
   /**
    * This function will format a new date string
-   * 
+   *
    * @param  {String} The string to format
    * @param  {String} The other date string
    * @return {String} The nicely formatted date string
@@ -144,7 +145,7 @@
         options = {
           weekday: 'long',
           month: 'long',
-          day: 'numeric' 
+          day: 'numeric'
         },
         dateObject = new Date( datetime ),
         otherDateObject = new Date( otherdatetime );
@@ -193,7 +194,7 @@
 
   /**
    * Does a call to the google places api and trigger the showPlacesSuggestions function on success.
-   * 
+   *
    * @param  {String} query The query send to the places api
    */
   function getPlacesCall( query ) {
@@ -205,12 +206,12 @@
 
   /**
    * Shows a dropdown list with suggestions based on the query provided by the user
-   * 
+   *
    * @param  {Object} Object containing the results from the places API
    */
   function showPlacesSuggestions( results, query ){
     var suggestionClass = '';
-      
+
     $locationSuggestions.empty();
 
     if( lastQuery && lastQuery === query ) {
@@ -222,7 +223,7 @@
         }
         $locationSuggestions.append('<li class="' + suggestionClass + '"><a href="#">' + results.predictions[i].description + '</a></li>');
       }
-  
+
       $locationSuggestions.addClass('active');
     }
   }
@@ -230,33 +231,33 @@
   /**
    * Adds a listener to the results provided by the Places API
    */
-  function addLocationSuggestionsListener(){    
+  function addLocationSuggestionsListener(){
     $locationSuggestions.on('click', 'a', function(){
       var value = $(this).text();
-      
+
       $locationInput.val( value );
       $locationSuggestions.empty();
       $locationSuggestions.removeClass('active');
     });
   }
-  
+
   /**
    * Adds a listener to the location input which will send query's to the Places API
    */
   function addLocationListener(){
     var query,
         requestTimeout = 0;
-            
+
     $locationInput.on('keyup', function( event ){
       query = $locationInput[0].value;
-      
+
       // When the value doesn't change we don't do a request
       if(query === lastQuery){
         return;
       }
-      
+
       lastQuery = query;
-    
+
       clearTimeout(requestTimeout);
 
       if( query.length > 2 ){
@@ -269,10 +270,22 @@
       }
     });
   }
-  
+
+  /**
+   * Fetch the title from the event from the form
+   */
+  function getEventTitle(){
+    google.script.run
+        .withSuccessHandler(
+          function(title) {
+            document.getElementById('eventplanner-title').value = title;
+          })
+        .getTitle();
+  }
+
   /**
    * This small function will check if a number is even or uneven
-   * 
+   *
    * @param  {Number} number  Integer to check
    * @return {Boolean}        True for even numbers false for odd
    */
@@ -295,6 +308,9 @@
 
     // Start listening to user clicks on the location suggestions
     addLocationSuggestionsListener();
+
+    // Fetch the title of the event from the form
+    getEventTitle();
 
     // set default date
     var d = new Date(),
