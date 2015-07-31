@@ -33,48 +33,57 @@ function onInstall(e) {
  * project file.
  */
 function showSidebar() {
-    var properties = PropertiesService.getDocumentProperties();
-    var authInfo = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL);
-    var status = authInfo.getAuthorizationStatus();
+    var properties = PropertiesService.getDocumentProperties(),
+        authInfo = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL),
+        status = authInfo.getAuthorizationStatus();
 
+    // The app requires triggers that can only run in FULL auth mode
     if (status === ScriptApp.AuthorizationStatus.REQUIRED) {
         showAuthorisationPopup(authInfo);
     } else {
-      var template;
-      var html;
+        var template,
+            html;
 
-      if( properties.getProperty('guestAddTriggerId') ) {
-        template = HtmlService.createTemplateFromFile('SidebarError');
-      } else {
-        template = HtmlService.createTemplateFromFile('Sidebar');
-      }
+        // There can be only one event so when it is already set show the error sidebar
+        if (properties.getProperty('guestAddTriggerId')) {
+            template = HtmlService.createTemplateFromFile('SidebarError');
+        } else {
+            template = HtmlService.createTemplateFromFile('Sidebar');
+        }
 
-      template.lang = getLang();
-      html = template.evaluate().setTitle(SIDEBAR_TITLE);
-      FormApp.getUi().showSidebar(html);
+        template.lang = getLang();
+        html = template.evaluate().setTitle(SIDEBAR_TITLE);
+        FormApp.getUi().showSidebar(html);
     }
 }
 
-function getLang(){
-  var lang = Session.getActiveUserLocale();
-  var supportedLanguages = ['nl', 'en', 'es', 'tr'];
+/**
+ * Get the user language. Currently the app only supports NL, ES, EN and TR
+ * @returns {*}
+ */
+function getLang() {
+    var lang = Session.getActiveUserLocale(),
+        supportedLanguages = ['nl', 'en', 'es', 'tr'];
 
-  // If the language is not supported use english as fallback
-  if( supportedLanguages.indexOf( lang ) === -1 ){
-    lang = 'en';
-  }
+    // If the language is not supported use english as fallback
+    if (supportedLanguages.indexOf(lang) === -1) {
+        lang = 'en';
+    }
 
-  return lang;
+    return lang;
 }
 
-
+/**
+ * Show an authorisation popup when the user is not in FULL mode.
+ * @param authInfo
+ */
 function showAuthorisationPopup(authInfo) {
     var template = HtmlService.createTemplateFromFile('AuthorisationPopup');
     template.authUrl = authInfo.getAuthorizationUrl();
     template.evaluate();
     template.setWidth(350);
     template.setHeight(170);
-    FormApp.getUi().showModalDialog(ui, AUTH_POPUP_TITLE);
+    FormApp.getUi().showModalDialog(template, AUTH_POPUP_TITLE);
 }
 
 /**
@@ -84,9 +93,7 @@ function showAuthorisationPopup(authInfo) {
  * @return {string} the converted date formatted as dd/mm/yyyy
  */
 function convertDate(date) {
-    var arr = [];
-
-    arr = date.split('-');
+    var arr = date.split('-');
 
     return arr[2] + '/' + arr[1] + '/' + arr[0];
 }
@@ -97,13 +104,13 @@ function convertDate(date) {
  * @param  {string} The query to search for
  * @return {Object} Object containing the results
  */
-function getPlaces( query ) {
-  var completeUrl = 'https://maps.googleapis.com/maps/api/place/autocomplete/json?key=AIzaSyD8dAv-lAB0PeLifnE_K0_aCKylvlvZgck&language=' + Session.getActiveUserLocale() + '&input=' + query;
-  var response = UrlFetchApp.fetch( completeUrl );
-  var data = response.getContentText();
-  var json = JSON.parse( data );
+function getPlaces(query) {
+    var completeUrl = 'https://maps.googleapis.com/maps/api/place/autocomplete/json?key=AIzaSyD8dAv-lAB0PeLifnE_K0_aCKylvlvZgck&language=' + Session.getActiveUserLocale() + '&input=' + query,
+        response = UrlFetchApp.fetch(completeUrl),
+        data = response.getContentText(),
+        json = JSON.parse(data);
 
-  return json;
+    return json;
 }
 
 /**
@@ -112,7 +119,7 @@ function getPlaces( query ) {
  * @return {String} The title of the current form
  */
 function getTitle() {
-  return FormApp.getActiveForm().getTitle();
+    return FormApp.getActiveForm().getTitle();
 }
 
 /**
@@ -122,16 +129,16 @@ function getTitle() {
  * @return {String} String containing the error messages
  */
 function checkEventDate(eventData) {
-   var startDate = eventData.start.date.replace(/-/g, ''),
-       startTime = eventData.start.time.replace(/:/g,''),
-       endDate = eventData.end.date.replace(/-/g, ''),
-       endTime = eventData.end.time.replace(/:/g,'');
+    var startDate = eventData.start.date.replace(/-/g, ''),
+        startTime = eventData.start.time.replace(/:/g, ''),
+        endDate = eventData.end.date.replace(/-/g, ''),
+        endTime = eventData.end.time.replace(/:/g, '');
 
-  if (parseInt(startDate, 10) > parseInt(endDate, 10)) {
-    return 'The end date should be on or after the start date.';
-  } else if(eventData.eventType !== 'day' && parseInt(startDate+startTime, 10) >= parseInt(endDate+endTime, 10)) {
-    return 'The end date and time should be after the start date and time.';
-  }
+    if (parseInt(startDate, 10) > parseInt(endDate, 10)) {
+        return 'The end date should be on or after the start date.';
+    } else if (eventData.eventType !== 'day' && parseInt(startDate + startTime, 10) >= parseInt(endDate + endTime, 10)) {
+        return 'The end date and time should be after the start date and time.';
+    }
 }
 
 /**
@@ -141,44 +148,43 @@ function checkEventDate(eventData) {
  * @return {Object} Object containing the error messages
  */
 function checkValues(eventData) {
-  var errorArray = [],
-      hasStartDate = true,
-      hasEndDate = true;
+    var errorArray = [],
+        hasStartDate = true,
+        hasEndDate = true;
 
-  // Check if the start date is set
-  if(!eventData.start || !eventData.start.date) {
-    hasStartDate = false;
-    errorArray.push('Please enter a start date.');
-  }
-
-  // Check if the start time is set
-  if(!eventData.start || !eventData.start.time) {
-    errorArray.push('Please enter a start time.');
-  }
-
-  // Check if the end date is set
-  if(!eventData.end || !eventData.end.date) {
-    hasEndDate = false;
-    errorArray.push('Please enter an end date.');
-  }
-
-  // Check if the end time is set
-  if(!eventData.end || !eventData.end.time) {
-    errorArray.push('Please enter an end time.');
-  }
-
-
-
-  // Check if the start date is on or before the end date
-  if(hasStartDate && hasEndDate && checkEventDate(eventData)) {
-    errorArray.push(checkEventDate(eventData));
-  }
-
-  if(errorArray.length) {
-    throw {
-      message: errorArray.join('<br>')
+    // Check if the start date is set
+    if (!eventData.start || !eventData.start.date) {
+        hasStartDate = false;
+        errorArray.push('Please enter a start date.');
     }
-  }
+
+    // Check if the start time is set
+    if (!eventData.start || !eventData.start.time) {
+        errorArray.push('Please enter a start time.');
+    }
+
+    // Check if the end date is set
+    if (!eventData.end || !eventData.end.date) {
+        hasEndDate = false;
+        errorArray.push('Please enter an end date.');
+    }
+
+    // Check if the end time is set
+    if (!eventData.end || !eventData.end.time) {
+        errorArray.push('Please enter an end time.');
+    }
+
+
+    // Check if the start date is on or before the end date
+    if (hasStartDate && hasEndDate && checkEventDate(eventData)) {
+        errorArray.push(checkEventDate(eventData));
+    }
+
+    if (errorArray.length) {
+        throw {
+            message: errorArray.join('<br>')
+        }
+    }
 }
 
 /**
@@ -215,102 +221,122 @@ function addFormItem(eventData) {
     // 3. add item to form
     var item = form.addMultipleChoiceItem();
 
-    item.setTitle( translations[ lang ].formItem.title )
+    item.setTitle(translations[lang].formItem.title)
         .setHelpText(eventData.eventString)
         .setRequired(true)
         .setChoices([
-            item.createChoice( translations[ lang ].formItem.yes ),
-            item.createChoice( translations[ lang ].formItem.no )
+            item.createChoice(translations[lang].formItem.yes),
+            item.createChoice(translations[lang].formItem.no)
         ])
         .showOtherOption(false);
 
-    properties.setProperty('attendingTrue', translations[ lang ].formItem.yes );
+    properties.setProperty('attendingTrue', translations[lang].formItem.yes);
 
     properties.setProperty('itemId', item.getId());
     form.setCollectEmail(true);
 }
 
-function checkFormItemValue(){
-  var hasChanged = false;
-
-  var properties = PropertiesService.getDocumentProperties();
-  var itemId = parseFloat( properties.getProperty('itemId') );
-  var attendingTrue = properties.getProperty('attendingTrue');
-
-  var form = FormApp.getActiveForm();
-  var items = form.getItems();
-
-  for (var i = 0; i < items.length; i++) {
-    if( items[i].getId() === itemId ){
-      var firstChoice = items[i].asMultipleChoiceItem().getChoices()[0].getValue();
-      if( firstChoice !== attendingTrue ){
-        hasChanged = true;
-        properties.setProperty('attendingTrue', firstChoice);
-      }
-      break;
-    }
-  }
-
-  return hasChanged;
-}
-
-function checkEventDeletion(){
-  var isDeleted = true;
-
-  var properties = PropertiesService.getDocumentProperties();
-  var itemId = parseFloat( properties.getProperty('itemId') );
-
-  var form = FormApp.getActiveForm();
-  var items = form.getItems();
-
-  for (var i = 0; i < items.length; i++) {
-    if( items[i].getId() === itemId ){
-      isDeleted = false;
-      break;
-    }
-  }
-
-  if(isDeleted){
-    // 1. Remove calendar event
-    removeCalendarEvent();
-
-    // 2. Remove triggers
-    removeAllTriggers();
-  }
-
-  return isDeleted;
-}
-
-function removeAllTriggers(){
-  var triggers = ScriptApp.getProjectTriggers();
-  for (var i = 0; i < triggers.length; i++) {
-    ScriptApp.deleteTrigger(triggers[i]);
-  }
-}
-
-function addGuestOnSubmit(e) {
-    var form = FormApp.getActiveForm();
-    var responses = form.getResponses();
-    var last = responses.length-1;
-    var response = responses[last];
-    var email = response.getRespondentEmail()
-    var items = response.getItemResponses();
-    var isAttending = false;
-    var properties = PropertiesService.getDocumentProperties();
+/**
+ * Check whether the author of the form changed the options.
+ * @returns {boolean}
+ */
+function checkFormItemValue() {
+    var hasChanged = false,
+        properties = PropertiesService.getDocumentProperties(),
+        itemId = parseFloat(properties.getProperty('itemId')),
+        attendingTrue = properties.getProperty('attendingTrue'),
+        form = FormApp.getActiveForm(),
+        items = form.getItems();
 
     for (var i = 0; i < items.length; i++) {
-      if (items[i].getItem().getId() === parseFloat(properties.getProperty('itemId'))) {
-        isAttending = items[i].getResponse() === properties.getProperty('attendingTrue');
-        break;
-      }
+        if (items[i].getId() === itemId) {
+            var firstChoice = items[i].asMultipleChoiceItem().getChoices()[0].getValue();
+            if (firstChoice !== attendingTrue) {
+                hasChanged = true;
+                properties.setProperty('attendingTrue', firstChoice);
+            }
+            break;
+        }
     }
 
+    return hasChanged;
+}
+
+/**
+ * Check whether or not the form item still exists, if not remove everything
+ * @returns {boolean}
+ */
+function checkEventDeletion() {
+    var isDeleted = true,
+        properties = PropertiesService.getDocumentProperties(),
+        itemId = parseFloat(properties.getProperty('itemId')),
+        form = FormApp.getActiveForm(),
+        items = form.getItems();
+
+    for (var i = 0; i < items.length; i++) {
+        if (items[i].getId() === itemId) {
+            isDeleted = false;
+            break;
+        }
+    }
+
+    if (isDeleted) {
+        // 1. Remove calendar event
+        removeCalendarEvent();
+
+        // 2. Remove triggers
+        removeAllTriggers();
+    }
+
+    return isDeleted;
+}
+
+/**
+ * remove all triggers set by the event planner
+ */
+function removeAllTriggers() {
+    var triggers = ScriptApp.getProjectTriggers();
+    for (var i = 0; i < triggers.length; i++) {
+        ScriptApp.deleteTrigger(triggers[i]);
+    }
+}
+
+/**
+ * Add a guest when one has pressed submit.
+ * @param e
+ */
+function addGuestOnSubmit(e) {
+    var form = FormApp.getActiveForm(),
+        responses = form.getResponses(),
+        last = responses.length - 1,
+        response = responses[last],
+        email = response.getRespondentEmail(),
+        items = response.getItemResponses(),
+        isAttending = false,
+        properties = PropertiesService.getDocumentProperties();
+
+    /*
+    We're reading a spreadsheet row so that means
+    we need to loop though all colums in order to
+    find what we're looking for.
+     */
+    for (var i = 0; i < items.length; i++) {
+        if (items[i].getItem().getId() === parseFloat(properties.getProperty('itemId'))) {
+            isAttending = items[i].getResponse() === properties.getProperty('attendingTrue');
+            break;
+        }
+    }
+
+    // Only invite when the user is attending and we have the mailaddress.
     if (email && isAttending) {
         addGuestToEvent(email);
     }
 
 }
 
+/**
+ * When the user is invited we show the "whoohoo" screen to prevent multiple events being added.
+ */
 function showCompletedScreen() {
     var template = HtmlService.createTemplateFromFile('SidebarSuccess');
     template.lang = getLang();
