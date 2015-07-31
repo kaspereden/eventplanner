@@ -78,8 +78,8 @@ var translations = {
       "titleLabel": "Título",
       "startDateLabel": "Fecha de inicio",
       "startTimeLabel": "Hora de inicio",
-      "endDateLabel": "Fecha de finalización",
-      "endTimeLabel": "Hora de finalización",
+      "endDateLabel": "Fecha final",
+      "endTimeLabel": "Hora final",
       "locationLabel": "Lugar",
       "addButton": "Añadir"
     },
