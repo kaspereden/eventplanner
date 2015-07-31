@@ -5,15 +5,15 @@ var translations = {
       "link": "Add-on autoriseren"
     },
     "sidebar": {
-      "intro": "Voeg een evenement aan het formulier toe door de onderstaande opties in te vullen. Je kunt kiezen voor een evenement dat de hele dag duurt of voor een evenement met een start en eind tijd.",
+      "intro": "Voeg een evenement aan het formulier toe door de onderstaande opties in te vullen. Je kunt kiezen voor een evenement dat de hele dag duurt of voor een evenement met een start- en eindtijd.",
       "typeLabel": "Wat voor type evenement wil je toevoegen?",
-      "partial": "Een evenement met een start en eind tijd",
+      "partial": "Een evenement met een start- en eindtijd",
       "day": "Een evenement dat één of meerdere dagen duurt",
       "titleLabel": "Titel",
-      "startDateLabel": "Start datum",
-      "startTimeLabel": "Start tijd",
-      "endDateLabel": "Eind datum",
-      "endTimeLabel": "Eind tijd",
+      "startDateLabel": "Startdatum",
+      "startTimeLabel": "Starttijd",
+      "endDateLabel": "Einddatum",
+      "endTimeLabel": "Eindtijd",
       "locationLabel": "Locatie",
       "addButton": "Voeg toe"
     },
@@ -62,6 +62,39 @@ var translations = {
     "formItem": {
       "title": "Will you be there?",
       "yes": "Yes",
+      "no": "No"
+    }
+  },
+  "es": {
+    "authorisationpopup": {
+      "intro": "Para utilizar este plugin que necesita para autorizarlo.",
+      "link": "Autorizar Plugin"
+    },
+    "sidebar": {
+      "intro": "Añadir un evento rellenando el siguiente formulario. Tu puedes optar por un evento que dura todo el día o para un evento con una hora de inicio y fin.",
+      "typeLabel": "Qué tipo de evento es lo que quieres agregar?",
+      "partial": "Un evento con una hora de inicio y fin",
+      "day": "Un evento que dura uno o más días",
+      "titleLabel": "Título",
+      "startDateLabel": "Fecha de inicio",
+      "startTimeLabel": "Hora de inicio",
+      "endDateLabel": "Fecha de finalización",
+      "endTimeLabel": "Hora de finalización",
+      "locationLabel": "Lugar",
+      "addButton": "Añadir"
+    },
+    "success": "Tienes un evento añadido correctamente a su formulario. Cuando un demandado en la forma indicada para estar presente, él o ella recibe una invitación en su calendario.",
+    "error": "Tu puedes agregar un solo evento a su formulario, quite el viejo primero en añadir uno nuevo.",
+    "eventString": {
+      "placeOn": " se lleva a cabo en ",
+      "placeFrom": " tendrá lugar del ",
+      "from": " desde ",
+      "till": " a ",
+      "at": " en el lugar: "
+    },
+    "formItem": {
+      "title": "Estás ahí?",
+      "yes": "Si",
       "no": "No"
     }
   }
