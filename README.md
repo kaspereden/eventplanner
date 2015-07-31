@@ -1,3 +1,3 @@
-# eventplanner
+# Event Planner
 
-nothing here yet
+Event Planner is a Google Forms addon. 

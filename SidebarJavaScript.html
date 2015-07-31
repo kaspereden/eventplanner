@@ -2,371 +2,372 @@
 
 <script>
 
-  var $locationInput = $('#eventplanner-location'),
-      $locationSuggestions = $('#eventplanner-location-suggestions'),
-      lastQuery = '',
-      userLanguage,
-      eventStringTranslations;
+    var $locationInput = $('#eventplanner-location'),
+            $locationSuggestions = $('#eventplanner-location-suggestions'),
+            lastQuery = '',
+            userLanguage,
+            eventStringTranslations;
 
-  /**
-   * This function formats the date and time to a readable javascript Date object
-   *
-   * @param  {Object} dateObj Contains both date and time
-   * @return {String}         String parsable by the javascript new Date() function
-   */
-  function formatDate(dateObj) {
-     var date = dateObj.date.split('-');
-     var time = dateObj.time + ':00';
-     var year = date[0],
-         month = date [1],
-         day = date[2];
-     var fullMonth = {
-       '01': 'January',
-       '02': 'February',
-       '03': 'March',
-       '04': 'April',
-       '05': 'May',
-       '06': 'June',
-       '07': 'July',
-       '08': 'August',
-       '09': 'September',
-       '10': 'October',
-       '11': 'November',
-       '12': 'December'
-     };
+    /**
+     * This function formats the date and time to a readable javascript Date object
+     *
+     * @param  {Object} dateObj Contains both date and time
+     * @return {String}         String parsable by the javascript new Date() function
+     */
+    function formatDate(dateObj) {
+        var date = dateObj.date.split('-');
+        var time = dateObj.time + ':00';
+        var year = date[0],
+                month = date [1],
+                day = date[2];
+        var fullMonth = {
+            '01': 'January',
+            '02': 'February',
+            '03': 'March',
+            '04': 'April',
+            '05': 'May',
+            '06': 'June',
+            '07': 'July',
+            '08': 'August',
+            '09': 'September',
+            '10': 'October',
+            '11': 'November',
+            '12': 'December'
+        };
 
-     //'July 27, 2015 20:00:00'
-     return fullMonth[month] + ' ' + day + ', ' + year + ' ' + time;
-  }
-
-  /**
-   * Calls the server to modify the form.
-   * Sends the information entered into the sidebar to the server to append
-   * a new form item to the current form.
-   */
-  function onAddItemClick() {
-    this.disabled = true;
-
-    // Remove the location suggestions
-    $locationSuggestions.empty();
-    $locationSuggestions.removeClass('active');
-
-    // Gather any information that needs to be sent to the server here.
-    var eventData = {
-      eventType: document.getElementById('eventplanner-eventtype').value,
-      title: document.getElementById('eventplanner-title').value,
-      start: {
-        date: document.getElementById('eventplanner-start-date').value,
-        time: document.getElementById('eventplanner-start-time').value
-      },
-      end: {
-        date: document.getElementById('eventplanner-end-date').value,
-        time: document.getElementById('eventplanner-end-time').value
-      },
-      location: document.getElementById('eventplanner-location').value
-    };
-
-    eventData.start.datetime = formatDate(eventData.start);
-    eventData.end.datetime = formatDate(eventData.end);
-
-    eventData.eventString = getEventString( eventData );
-
-    // Send the value to the server and listen for a response.
-    google.script.run
-        .withSuccessHandler(
-          function(msg, element) {
-            element.disabled = false;
-            // Respond to success conditions here.
-            google.script.run.withUserObject(this).showCompletedScreen();
-          })
-        .withFailureHandler(
-          function(msg, element) {
-            // Respond to failure conditions here.
-            showStatus(msg, 'error');
-            element.disabled = false;
-          })
-        .withUserObject(this)
-        .addFormItem(eventData);
-  }
-
-
-  /**
-   * Get a nicely formatted string which tells the user where and when the event will take place
-   *
-   * @param  {Object} Object containing all eventdata
-   * @return {String} A string telling the user when the event takes place and where
-   */
-  function getEventString( eventData ){
-    var eventString;
-
-    eventData.start.formattedDate = getDateString( eventData.start.datetime, eventData.end.datetime );
-    eventData.end.formattedDate = getDateString( eventData.end.datetime, eventData.start.datetime );
-
-    // Formatting for events taking place on a specific time
-    if( eventData.eventType === 'partial' ){
-      if( eventData.start.date === eventData.end.date ){
-        // Event takes place on the same day
-        eventString = eventData.title + eventStringTranslations.placeOn + eventData.start.formattedDate + eventStringTranslations.from + eventData.start.time + eventStringTranslations.till + eventData.end.time;
-      } else {
-        // Event will span multiple dates
-        eventString = eventData.title + eventStringTranslations.placeFrom + eventData.start.formattedDate + ' ' + eventData.start.time + eventStringTranslations.till + eventData.end.formattedDate + ' ' + eventData.end.time;
-      }
+        //'July 27, 2015 20:00:00'
+        return fullMonth[month] + ' ' + day + ', ' + year + ' ' + time;
     }
 
-    // Formatting for events taking place on a whole day or multiple days
-    if( eventData.eventType === 'day' ){
-      if( eventData.start.date === eventData.end.date ){
-        // Event is one full day
-        eventString = eventData.title + eventStringTranslations.placeOn + eventData.start.formattedDate;
-      } else {
-        // Event will span multiple full days
-        eventString = eventData.title + eventStringTranslations.placeFrom + eventData.start.formattedDate + eventStringTranslations.till + eventData.end.formattedDate;
-      }
-    }
+    /**
+     * Calls the server to modify the form.
+     * Sends the information entered into the sidebar to the server to append
+     * a new form item to the current form.
+     */
+    function onAddItemClick() {
+        this.disabled = true;
 
-    // Formatting for the provided location
-    if( eventData.location ){
-      eventString += eventStringTranslations.at + eventData.location + '.';
-    } else {
-      eventString += '.';
-    }
-
-    return eventString;
-  }
-
-  /**
-   * This function will format a new date string
-   *
-   * @param  {String} The string to format
-   * @param  {String} The other date string
-   * @return {String} The nicely formatted date string
-   */
-  function getDateString( datetime, otherdatetime ){
-    var dateString = '',
-        options = {
-          weekday: 'long',
-          month: 'long',
-          day: 'numeric'
-        },
-        dateObject = new Date( datetime ),
-        otherDateObject = new Date( otherdatetime );
-
-    if( dateObject.getYear() !== otherDateObject.getYear() ){
-      options.year = 'numeric';
-    }
-
-    return dateObject.toLocaleDateString( userLanguage, options);
-  }
-
-  /**
-   * Displays the given status message in the sidebar.
-   *
-   * @param {String} msg The status message to display.
-   * @param {String} classId The message type (class id) that the message
-   *   should be displayed as.
-   */
-  function showStatus(msg, classId) {
-
-    var notifArea = document.getElementById('eventplanner-notification-area');
-    notifArea.classList.remove(classId);
-    notifArea.innerHTML = msg;
-    if (classId) {
-      notifArea.classList.add(classId);
-    }
-  }
-
-  /**
-   * Update the interface when a user selects either a full day event or a partial day event
-   */
-  function addEventTypeListener(){
-    $('#eventplanner-eventtype').on('change', function(){
-      var value = $(this)[0].value,
-          className = value + '-event';
-
-      // Update the interface
-      if( value === 'partial' ){
-        $(this).parents('form').addClass(className).removeClass('day-event');
-      } else {
-        $(this).parents('form').addClass(className).removeClass('partial-event');
-      }
-    });
-  }
-
-  /**
-   * Does a call to the google places api and trigger the showPlacesSuggestions function on success.
-   *
-   * @param  {String} query The query send to the places api
-   */
-  function getPlacesCall( query ) {
-    google.script.run
-      .withSuccessHandler( showPlacesSuggestions )
-      .withUserObject( query )
-      .getPlaces( query );
-  }
-
-  /**
-   * Shows a dropdown list with suggestions based on the query provided by the user
-   *
-   * @param  {Object} Object containing the results from the places API
-   */
-  function showPlacesSuggestions( results, query ){
-    var suggestionClass = '';
-
-    $locationSuggestions.empty();
-
-    if( lastQuery && lastQuery === query ) {
-      for (var i = 0; i < results.predictions.length; i++) {
-        if( isEven(i) ) {
-          suggestionClass = 'suggestion';
-        } else {
-          suggestionClass = 'suggestion stripe';
-        }
-        $locationSuggestions.append('<li class="' + suggestionClass + '"><a href="#">' + results.predictions[i].description + '</a></li>');
-      }
-
-      $locationSuggestions.addClass('active');
-    }
-  }
-
-  /**
-   * Adds a listener to the results provided by the Places API
-   */
-  function addLocationSuggestionsListener(){
-    $locationSuggestions.on('click', 'a', function(){
-      var value = $(this).text();
-
-      $locationInput.val( value );
-      $locationSuggestions.empty();
-      $locationSuggestions.removeClass('active');
-    });
-  }
-
-  /**
-   * Adds a listener to the location input which will send query's to the Places API
-   */
-  function addLocationListener(){
-    var query,
-        requestTimeout = 0;
-
-    $locationInput.on('keyup', function( event ){
-      query = $locationInput[0].value;
-
-      // When the value doesn't change we don't do a request
-      if(query === lastQuery){
-        return;
-      }
-
-      lastQuery = query;
-
-      clearTimeout(requestTimeout);
-
-      if( query.length > 2 ){
-        requestTimeout = setTimeout( function(){
-          getPlacesCall( query );
-        }, 200);
-      } else {
+        // Remove the location suggestions
         $locationSuggestions.empty();
         $locationSuggestions.removeClass('active');
-      }
-    });
-  }
 
-  /**
-   * Fetch the title from the event from the form
-   */
-  function getEventTitle(){
-    google.script.run
-        .withSuccessHandler(
-          function(title) {
-            document.getElementById('eventplanner-title').value = title;
-          })
-        .getTitle();
-  }
+        // Gather any information that needs to be sent to the server here.
+        var eventData = {
+            eventType: document.getElementById('eventplanner-eventtype').value,
+            title: document.getElementById('eventplanner-title').value,
+            start: {
+                date: document.getElementById('eventplanner-start-date').value,
+                time: document.getElementById('eventplanner-start-time').value
+            },
+            end: {
+                date: document.getElementById('eventplanner-end-date').value,
+                time: document.getElementById('eventplanner-end-time').value
+            },
+            location: document.getElementById('eventplanner-location').value
+        };
 
-  /**
-   * This small function will check if a number is even or uneven
-   *
-   * @param  {Number} number  Integer to check
-   * @return {Boolean}        True for even numbers false for odd
-   */
-  function isEven(number){
-    return (number%2 == 0) ? true : false;
-  };
+        eventData.start.datetime = formatDate(eventData.start);
+        eventData.end.datetime = formatDate(eventData.end);
 
-  function getUserLanguage(){
-    google.script.run
-        .withSuccessHandler( function(lang) {
-          userLanguage = lang;
-          getEventStringTranslations( lang );
-        })
-        .getLang();
-  }
+        eventData.eventString = getEventString(eventData);
 
-  function getEventStringTranslations( lang ){
-    google.script.run
-        .withSuccessHandler( function( eventStrings ) {
-          eventStringTranslations = eventStrings;
-        })
-        .getEventStringTranslations( lang );
-  }
-
-  /**
-   * Run initializations on sidebar load.
-   */
-  (function() {
-    // Get the user language
-    getUserLanguage();
-
-    // Assign handler functions to sidebar elements here, if needed.
-    document.getElementById('eventplanner-add-button').onclick = onAddItemClick;
-
-    // Start listening to changes on the event type select box
-    addEventTypeListener();
-
-    // Start listening to changes on the location input field
-    addLocationListener();
-
-    // Start listening to user clicks on the location suggestions
-    addLocationSuggestionsListener();
-
-    // Fetch the title of the event from the form
-    getEventTitle();
-
-    // set default date
-    var d = new Date(),
-        h = d.getHours(),
-        year = d.getFullYear(),
-        month = d.getMonth() + 1,
-        day = d.getDate();
-
-    function update(i) {
-        i = (i < 10) ? '0' + i : i;
-        return i;
+        // Send the value to the server and listen for a response.
+        google.script.run
+                .withSuccessHandler(
+                function (msg, element) {
+                    element.disabled = false;
+                    // Respond to success conditions here.
+                    google.script.run.withUserObject(this).showCompletedScreen();
+                })
+                .withFailureHandler(
+                function (msg, element) {
+                    // Respond to failure conditions here.
+                    showStatus(msg, 'error');
+                    element.disabled = false;
+                })
+                .withUserObject(this)
+                .addFormItem(eventData);
     }
 
-    var endTime = '';
 
-    if( h === 23 ){
-      endTime = '23:59';
-    } else {
-      endTime = update(h + 1) +':00';
+    /**
+     * Get a nicely formatted string which tells the user where and when the event will take place
+     *
+     * @param  {Object} Object containing all eventdata
+     * @return {String} A string telling the user when the event takes place and where
+     */
+    function getEventString(eventData) {
+        var eventString;
+
+        eventData.start.formattedDate = getDateString(eventData.start.datetime, eventData.end.datetime);
+        eventData.end.formattedDate = getDateString(eventData.end.datetime, eventData.start.datetime);
+
+        // Formatting for events taking place on a specific time
+        if (eventData.eventType === 'partial') {
+            if (eventData.start.date === eventData.end.date) {
+                // Event takes place on the same day
+                eventString = eventData.title + eventStringTranslations.placeOn + eventData.start.formattedDate + eventStringTranslations.from + eventData.start.time + eventStringTranslations.till + eventData.end.time;
+            } else {
+                // Event will span multiple dates
+                eventString = eventData.title + eventStringTranslations.placeFrom + eventData.start.formattedDate + ' ' + eventData.start.time + eventStringTranslations.till + eventData.end.formattedDate + ' ' + eventData.end.time;
+            }
+        }
+
+        // Formatting for events taking place on a whole day or multiple days
+        if (eventData.eventType === 'day') {
+            if (eventData.start.date === eventData.end.date) {
+                // Event is one full day
+                eventString = eventData.title + eventStringTranslations.placeOn + eventData.start.formattedDate;
+            } else {
+                // Event will span multiple full days
+                eventString = eventData.title + eventStringTranslations.placeFrom + eventData.start.formattedDate + eventStringTranslations.till + eventData.end.formattedDate;
+            }
+        }
+
+        // Formatting for the provided location
+        if (eventData.location) {
+            eventString += eventStringTranslations.at + eventData.location + '.';
+        } else {
+            eventString += '.';
+        }
+
+        return eventString;
     }
 
-    month = update(month);
-    day = update(day);
-    h = update(h);
+    /**
+     * This function will format a new date string
+     *
+     * @param  {String} The string to format
+     * @param  {String} The other date string
+     * @return {String} The nicely formatted date string
+     */
+    function getDateString(datetime, otherdatetime) {
+        var dateString = '',
+                options = {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric'
+                },
+                dateObject = new Date(datetime),
+                otherDateObject = new Date(otherdatetime);
 
-    var time = h + ':00';
-    var date = year + '-' + month + '-' + day;
+        if (dateObject.getYear() !== otherDateObject.getYear()) {
+            options.year = 'numeric';
+        }
 
-    document.getElementById('eventplanner-start-time').value = time;
-    document.getElementById('eventplanner-end-time').value = endTime;
+        return dateObject.toLocaleDateString(userLanguage, options);
+    }
 
-    document.getElementById('eventplanner-start-date').value = date;
-    document.getElementById('eventplanner-end-date').value = date;
+    /**
+     * Displays the given status message in the sidebar.
+     *
+     * @param {String} msg The status message to display.
+     * @param {String} classId The message type (class id) that the message
+     *   should be displayed as.
+     */
+    function showStatus(msg, classId) {
 
-    // Call the server here to retrieve any information needed to build
-    // the sidebar, if necessary.
-  })();
+        var notifArea = document.getElementById('eventplanner-notification-area');
+        notifArea.classList.remove(classId);
+        notifArea.innerHTML = msg;
+        if (classId) {
+            notifArea.classList.add(classId);
+        }
+    }
+
+    /**
+     * Update the interface when a user selects either a full day event or a partial day event
+     */
+    function addEventTypeListener() {
+        $('#eventplanner-eventtype').on('change', function () {
+            var value = $(this)[0].value,
+                    className = value + '-event';
+
+            // Update the interface
+            if (value === 'partial') {
+                $(this).parents('form').addClass(className).removeClass('day-event');
+            } else {
+                $(this).parents('form').addClass(className).removeClass('partial-event');
+            }
+        });
+    }
+
+    /**
+     * Does a call to the google places api and trigger the showPlacesSuggestions function on success.
+     *
+     * @param  {String} query The query send to the places api
+     */
+    function getPlacesCall(query) {
+        google.script.run
+                .withSuccessHandler(showPlacesSuggestions)
+                .withUserObject(query)
+                .getPlaces(query);
+    }
+
+    /**
+     * Shows a dropdown list with suggestions based on the query provided by the user
+     *
+     * @param  {Object} Object containing the results from the places API
+     */
+    function showPlacesSuggestions(results, query) {
+        var suggestionClass = '';
+
+        $locationSuggestions.empty();
+
+        if (lastQuery && lastQuery === query) {
+            for (var i = 0; i < results.predictions.length; i++) {
+                if (isEven(i)) {
+                    suggestionClass = 'suggestion';
+                } else {
+                    suggestionClass = 'suggestion stripe';
+                }
+                $locationSuggestions.append('<li class="' + suggestionClass + '"><a href="#">' + results.predictions[i].description + '</a></li>');
+            }
+
+            $locationSuggestions.addClass('active');
+        }
+    }
+
+    /**
+     * Adds a listener to the results provided by the Places API
+     */
+    function addLocationSuggestionsListener() {
+        $locationSuggestions.on('click', 'a', function () {
+            var value = $(this).text();
+
+            $locationInput.val(value);
+            $locationSuggestions.empty();
+            $locationSuggestions.removeClass('active');
+        });
+    }
+
+    /**
+     * Adds a listener to the location input which will send query's to the Places API
+     */
+    function addLocationListener() {
+        var query,
+                requestTimeout = 0;
+
+        $locationInput.on('keyup', function (event) {
+            query = $locationInput[0].value;
+
+            // When the value doesn't change we don't do a request
+            if (query === lastQuery) {
+                return;
+            }
+
+            lastQuery = query;
+
+            clearTimeout(requestTimeout);
+
+            if (query.length > 2) {
+                requestTimeout = setTimeout(function () {
+                    getPlacesCall(query);
+                }, 200);
+            } else {
+                $locationSuggestions.empty();
+                $locationSuggestions.removeClass('active');
+            }
+        });
+    }
+
+    /**
+     * Fetch the title from the event from the form
+     */
+    function getEventTitle() {
+        google.script.run
+                .withSuccessHandler(
+                function (title) {
+                    document.getElementById('eventplanner-title').value = title;
+                })
+                .getTitle();
+    }
+
+    /**
+     * This small function will check if a number is even or uneven
+     *
+     * @param  {Number} number  Integer to check
+     * @return {Boolean}        True for even numbers false for odd
+     */
+    function isEven(number) {
+        return (number % 2 == 0) ? true : false;
+    }
+    ;
+
+    function getUserLanguage() {
+        google.script.run
+                .withSuccessHandler(function (lang) {
+                    userLanguage = lang;
+                    getEventStringTranslations(lang);
+                })
+                .getLang();
+    }
+
+    function getEventStringTranslations(lang) {
+        google.script.run
+                .withSuccessHandler(function (eventStrings) {
+                    eventStringTranslations = eventStrings;
+                })
+                .getEventStringTranslations(lang);
+    }
+
+    /**
+     * Run initializations on sidebar load.
+     */
+    (function () {
+        // Get the user language
+        getUserLanguage();
+
+        // Assign handler functions to sidebar elements here, if needed.
+        document.getElementById('eventplanner-add-button').onclick = onAddItemClick;
+
+        // Start listening to changes on the event type select box
+        addEventTypeListener();
+
+        // Start listening to changes on the location input field
+        addLocationListener();
+
+        // Start listening to user clicks on the location suggestions
+        addLocationSuggestionsListener();
+
+        // Fetch the title of the event from the form
+        getEventTitle();
+
+        // set default date
+        var d = new Date(),
+                h = d.getHours(),
+                year = d.getFullYear(),
+                month = d.getMonth() + 1,
+                day = d.getDate();
+
+        function update(i) {
+            i = (i < 10) ? '0' + i : i;
+            return i;
+        }
+
+        var endTime = '';
+
+        if (h === 23) {
+            endTime = '23:59';
+        } else {
+            endTime = update(h + 1) + ':00';
+        }
+
+        month = update(month);
+        day = update(day);
+        h = update(h);
+
+        var time = h + ':00';
+        var date = year + '-' + month + '-' + day;
+
+        document.getElementById('eventplanner-start-time').value = time;
+        document.getElementById('eventplanner-end-time').value = endTime;
+
+        document.getElementById('eventplanner-start-date').value = date;
+        document.getElementById('eventplanner-end-date').value = date;
+
+        // Call the server here to retrieve any information needed to build
+        // the sidebar, if necessary.
+    })();
 
 </script>

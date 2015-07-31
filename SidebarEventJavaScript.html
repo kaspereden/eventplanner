@@ -1,34 +1,33 @@
 <script>
-  var checkItemInterval;
+    (function () {
+        var checkItemInterval;
 
-  function addCheckItemInterval(){
-    // Check every 10 seconds
-    checkItemInterval = setInterval( checkItem, 1000 );
-  }
 
-  function removeCheckItemInterval(){
-    clearInterval( checkItemInterval );
-  }
-
-  function checkItem(){
-    google.script.run
-      .withSuccessHandler( function( isDeleted ){
-        if( isDeleted ){
-          removeCheckItemInterval();
-          google.script.run.showSidebar();
+        /**
+         *  Remove interval when done
+         */
+        function removeCheckItemInterval() {
+            clearInterval(checkItemInterval);
         }
-      })
-      .checkEventDeletion();
 
-    google.script.run
-      .checkFormItemValue();
-  }
+        /**
+         * check item for deletion
+         */
+        function checkItem() {
+            google.script.run
+                    .withSuccessHandler(function (isDeleted) {
+                        if (isDeleted) {
+                            removeCheckItemInterval();
+                            google.script.run.showSidebar();
+                        }
+                    })
+                    .checkEventDeletion();
 
-  /**
-   * Run initializations on sidebar load.
-   */
-  (function() {
-    addCheckItemInterval();
-  })();
+            google.script.run
+                    .checkFormItemValue();
+        }
 
+        // Check every 10 seconds
+        checkItemInterval = setInterval(checkItem, 1000);
+    }());
 </script>

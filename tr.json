@@ -1,0 +1,35 @@
+{
+	"tr": {
+    	"authorisationpopup": {
+      		"intro": "To be able to use this add-on you need to authorise it.",
+      		"link": "Authorise add-on"
+		},
+		"sidebar": {
+			"intro": "Add an event by filling out the form below. You can select whether you would like to add an all-day event or an event with a start and end time.",
+			"typeLabel": "What kind of event would you like to add?",
+			"partial": "An event with a start and end time",
+			"day": "An event spanning one or multiple full days",
+			"titleLabel": "Title",
+			"startDateLabel": "Start date",
+			"startTimeLabel": "Start time",
+			"endDateLabel": "End date",
+			"endTimeLabel": "End time",
+			"locationLabel": "Location",
+			"addButton": "Add event"
+		},
+		"success": "You've successfully added the event to your form. When the form gets submitted and the user has selected yes they will be invited for your event.",
+		"error": "You can only add one event to your form, please remove the old one first.",
+		"eventString": {
+			"placeOn": " will take place on ",
+			"placeFrom": " will take place from ",
+			"from": " from ",
+			"till": " till ",
+			"at": " at "
+		},
+		"formItem": {
+			"title": "Will you be there?",
+			"yes": "Yes",
+			"no": "No"
+		}
+	}
+}
