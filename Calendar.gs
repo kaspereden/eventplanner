@@ -14,7 +14,7 @@ function createCalendarEvent(eventData, properties) {
   // Create calendar event
   var calendar = CalendarApp.getDefaultCalendar();
   var ev;
-  var calendarId;
+  var eventId;
 
   if(eventData.eventType === 'day'){
     options.summary = title;
@@ -26,16 +26,16 @@ function createCalendarEvent(eventData, properties) {
     }
     options.sendNotifications = true;
     ev = Calendar.Events.insert(options, 'primary');
-    calendarId = ev.id + '@google.com';
+    eventId = ev.id + '@google.com';
   } else {
     ev = calendar.createEvent(title, startDate, endDate, options);
-    calendarId = ev.getId();
+    eventId = ev.getId();
   }
 
   properties.setProperty('eventDate', eventData.start.datetime);
 
   properties.setProperty('eventTitle', title);
-  properties.setProperty('eventId', calendarId);
+  properties.setProperty('eventId', eventId);
   properties.setProperty('calendarId', calendar.getId());
 }
 
