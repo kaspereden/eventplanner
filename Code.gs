@@ -80,6 +80,7 @@ function getLang() {
 function showAuthorisationPopup(authInfo) {
     var template = HtmlService.createTemplateFromFile('AuthorisationPopup');
     template.authUrl = authInfo.getAuthorizationUrl();
+    template.lang = getLang();
     template.evaluate();
     template.setWidth(350);
     template.setHeight(170);
