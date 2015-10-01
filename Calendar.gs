@@ -4,36 +4,43 @@
  * @param properties
  */
 function createCalendarEvent(eventData, properties) {
-    var calendarId = 'primary',
-        startDate = new Date(eventData.start.datetime),
-        endDate = new Date(eventData.end.datetime),
-        event = {
-            summary: eventData.title,
-            description: eventData.description,
-            location: eventData.location
-        };
+    // Convert dateTime string to start & end dates
+    var startDate = new Date(eventData.start.datetime),
+        endDate = new Date(eventData.end.datetime);
+
+    // Convert description and location to options object
+    var options = {};
+    options.description = eventData.description;
+    options.location = eventData.location;
+    options.sendInvites = true;
+    var title = eventData.title;
+
+    // Create calendar event
+    var calendar = CalendarApp.getDefaultCalendar(),
+        event,
+        eventId;
 
     if (eventData.eventType === 'day') {
-        event.start = {
+        options.summary = title;
+        options.start = {
             date: eventData.start.date
         };
-        event.end = {
+        options.end = {
             date: addOneDay(endDate)
         };
+        options.sendNotifications = true;
+        event = Calendar.Events.insert(options, 'primary');
+        eventId = event.id + '@google.com';
     } else {
-        event.start = {
-            dateTime: startDate.toISOString()
-        };
-        event.end = {
-            dateTime: endDate.toISOString()
-        };
+        event = calendar.createEvent(title, startDate, endDate, options);
+        eventId = event.getId();
     }
 
-    // Create the event
-    var calendarEvent = Calendar.Events.insert(event, 'primary');
-
     // Set properties for later use
-    properties.setProperty('eventId', calendarEvent.id);
+    properties.setProperty('eventDate', eventData.start.datetime);
+    properties.setProperty('eventTitle', title);
+    properties.setProperty('eventId', eventId);
+    properties.setProperty('calendarId', calendar.getId());
 }
 
 /**
@@ -48,25 +55,41 @@ function addOneDay(date) {
         day = '' + date.getDate(),
         year = date.getFullYear();
 
-    if(month.length < 2) {
-        month = '0' + month;
-    }
-    if(day.length < 2) {
-        day = '0' + day;
-    }
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
 
     return [year, month, day].join('-');
 }
 
 /**
+ * Get calendar event that is linked with the form
+ *
+ * @returns {CalendarEvent}
+ */
+function getCalendarEvent() {
+    var properties = PropertiesService.getDocumentProperties();
+    var cal = CalendarApp.getCalendarById(properties.getProperty('calendarId'));
+    var options = {search: properties.getProperty('eventTitle')};
+    var events = cal.getEventsForDay(new Date(properties.getProperty('eventDate')), options);
+    var lenevents = events.length;
+
+    var eventId = properties.getProperty('eventId');
+
+    for (var i = 0; i < lenevents; i++) {
+        if (events[i].getId() === eventId) {
+            return events[i];
+        }
+    }
+}
+
+
+/**
  * Remove calendar event that is linked to the form
  */
 function removeCalendarEvent() {
-    var calendarId = 'primary',
-        properties = PropertiesService.getDocumentProperties(),
-        eventId = properties.getProperty('eventId');
+    var calendarEvent = getCalendarEvent();
 
-    Calendar.Events.remove( calendarId, eventId );
+    calendarEvent.deleteEvent();
 }
 
 /**
@@ -74,21 +97,8 @@ function removeCalendarEvent() {
  * @param email
  */
 function addGuestToEvent(email) {
-    var calendarId = 'primary',
-        properties = PropertiesService.getDocumentProperties(),
-        eventId = properties.getProperty('eventId'),
-        event = Calendar.Events.get( calendarId, eventId );
+    var calendarEvent = getCalendarEvent();
 
-    if(event.attendees) {
-        event.attendees.push({
-            email: email
-        });
-    } else {
-        event.attendees = new Array({email: email});
-    }
-
-    event = Calendar.Events.patch(event, calendarId, eventId, {
-        sendNotifications: true
-    });
+    calendarEvent.addGuest(email);
 }
 
